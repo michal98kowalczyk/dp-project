@@ -6,7 +6,7 @@
 CREATE USER orm WITH PASSWORD 'orm';
 
 CREATE DATABASE ormapp
-    WITH 
+    WITH
     OWNER = orm
     ENCODING = 'UTF8'
     LC_COLLATE = 'Polish_Poland.1250'
@@ -16,3 +16,4 @@ CREATE DATABASE ormapp
 
 COMMENT ON DATABASE ormapp
     IS 'include results of ORM Application';
+
