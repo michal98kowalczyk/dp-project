@@ -13,7 +13,7 @@ public class FieldUtils {
 
     public static <T> List<Field> getAllFields(Class<T> cls){
 
-        List<Field> fields = new ArrayList<Field>();
+        List<Field> fields = new ArrayList<>();
 
         Field[] declaredFieldsInClass = cls.getDeclaredFields();
         fields.addAll(Arrays.asList(declaredFieldsInClass));
