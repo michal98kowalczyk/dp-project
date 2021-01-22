@@ -1,8 +1,16 @@
 package dp.orm.schemas;
 
+import lombok.*;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+@ToString
+@RequiredArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@Setter
+@Getter
 public class ColumnSchema {
     private Class<?> parent;
 
@@ -21,5 +29,11 @@ public class ColumnSchema {
     private boolean isNullable;
 
     private boolean isForeignKey;
+
+    public ColumnSchema(Field field){
+        /**
+         to do
+          */
+    }
 
 }
