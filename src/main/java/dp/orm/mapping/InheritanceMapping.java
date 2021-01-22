@@ -1,28 +1,30 @@
 package dp.orm.mapping;
 
+import dp.orm.schemas.TableSchema;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class InheritanceMapping {
-    private Map<String, String> fieldToTable;
+    private Map<String, TableSchema> fieldToTable;
 
-    public InheritanceMapping(Map<String, String> fieldToTable) {
+    public InheritanceMapping(Map<String, TableSchema> fieldToTable) {
         this.fieldToTable = fieldToTable;
     }
 
-    public Set<String> getAllTableSchema() {
-        return fieldToTable.entrySet().stream()
+    public Set<TableSchema> getAllTableSchema() {
+        return this.fieldToTable.entrySet().stream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toSet());
     }
 
-    public String getTableSchema(String field) {
-        return fieldToTable.get(field);
+    public TableSchema getTableSchema(String field) {
+        return this.fieldToTable.get(field);
     }
 
-    public void union(Map<String, String> mapping) {
-        fieldToTable.putAll(mapping);
+    public void union(Map<String, TableSchema> mapping) {
+        this.fieldToTable.putAll(mapping);
     }
 
 
