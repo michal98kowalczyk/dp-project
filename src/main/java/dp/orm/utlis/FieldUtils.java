@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class FieldUtils {
 
+
     public static <T> List<Field> getAllFields(Class<T> cls){
 
         List<Field> fields = new ArrayList<>();

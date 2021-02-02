@@ -7,11 +7,13 @@ import java.util.Collection;
 import java.util.Set;
 
 
-@ToString
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@Setter
-@Getter
+//@ToString
+//@RequiredArgsConstructor
+//@EqualsAndHashCode
+//@Setter
+//@Getter
+//@NoArgsConstructor
+@Data
 @Builder
 public class TableSchema {
 
