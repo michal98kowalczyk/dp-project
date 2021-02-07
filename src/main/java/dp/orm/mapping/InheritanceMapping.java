@@ -17,7 +17,7 @@ public class InheritanceMapping {
         return this.fieldToTable.entrySet().stream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toSet());
-       
+
     }
 
     public TableSchema getTableSchema(String field) {
