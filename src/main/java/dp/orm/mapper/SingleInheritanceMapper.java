@@ -2,7 +2,6 @@ package dp.orm.mapper;
 
 
 import dp.orm.mapping.InheritanceMapping;
-import dp.orm.objects.Cat;
 import dp.orm.schemas.DatabaseSchema;
 import dp.orm.schemas.TableSchema;
 import dp.orm.utlis.NameUtils;
