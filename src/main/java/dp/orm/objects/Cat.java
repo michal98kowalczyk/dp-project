@@ -11,10 +11,10 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString(callSuper = true) @DatabaseTable(inheritanceType = InheritanceMappingType.CLASS_TABLE)
+@ToString(callSuper = true) @DatabaseTable(inheritanceType = InheritanceMappingType.CONCRETE_TABLE)
 public class Cat  extends Animal{
 
-    @Id
+
     @DatabaseField
     public  int catId;
 
