@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@DatabaseTable(inheritanceType = InheritanceMappingType.CLASS_TABLE)
+@DatabaseTable(inheritanceType = InheritanceMappingType.CONCRETE_TABLE)
 public class Animal {
 
     @Id
