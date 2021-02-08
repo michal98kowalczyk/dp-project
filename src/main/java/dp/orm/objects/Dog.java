@@ -13,7 +13,7 @@ import lombok.ToString;
 public class Dog extends Animal{
 
     @DatabaseField
-    private String owner;
+    public String owner;
 
 
 

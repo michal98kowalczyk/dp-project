@@ -18,10 +18,10 @@ public class Animal {
     private int id;
 
     @DatabaseField
-    private String type = "";
+    public String type = "";
 
 
 
     @DatabaseField
-    private String name;
+    public String name;
 }

@@ -16,7 +16,7 @@ public class Cat  extends Animal{
 
 
     @DatabaseField
-    private String owner;
+    public String owner;
 
 
 }

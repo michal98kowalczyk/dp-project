@@ -49,6 +49,8 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 
             List<Field> fields = filterFields(new ArrayList<>(Arrays.asList(cls.getDeclaredFields())));
 
+            System.out.println("Pola ktore nie dzialaja " + parentClass.getFields());
+
             TableSchema tableSchema = inheritanceMapping.getTableSchema(parentClass.getFields()[0].getName());
             tableSchema.addColumns(createColumns(fields));
 
