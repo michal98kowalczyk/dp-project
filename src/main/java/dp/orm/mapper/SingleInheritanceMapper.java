@@ -2,6 +2,7 @@ package dp.orm.mapper;
 
 
 import dp.orm.mapping.InheritanceMapping;
+import dp.orm.objects.Cat;
 import dp.orm.schemas.DatabaseSchema;
 import dp.orm.schemas.TableSchema;
 import dp.orm.utlis.NameUtils;
@@ -16,6 +17,7 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 
     public SingleInheritanceMapper(DatabaseSchema databaseSchema){
         this.databaseSchema = databaseSchema;
+
     }
 
 
@@ -23,6 +25,7 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 
     @Override
     public <T> InheritanceMapping map(Class<T> cls) {
+        System.out.println("mapping dla : "+cls.getName() + " parent to " + cls.getSuperclass());
 
         Class<? super T > parentClass = cls.getSuperclass();
         InheritanceMapping inheritanceMapping;
@@ -33,13 +36,19 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 
 
             TableSchema tableSchema = buildTableSchema(cls,fields);
-            Map<String,TableSchema> mapping = buildMapping(fields,tableSchema);
+            final Map<String,TableSchema> mapping = buildMapping(fields,tableSchema);
 
-            inheritanceMapping = new InheritanceMapping(mapping);
+//            inheritanceMapping = new InheritanceMapping(mapping);
+
+
+
+            return databaseSchema.addMapping(cls,new InheritanceMapping(mapping));
 
         }else {
 
+
             inheritanceMapping = databaseSchema.getMapping(parentClass);
+
 
             if (inheritanceMapping == null){
                 inheritanceMapping = this.map(parentClass);
@@ -49,19 +58,32 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 
             List<Field> fields = filterFields(new ArrayList<>(Arrays.asList(cls.getDeclaredFields())));
 
+//            System.out.println("Pola ktore nie  dzialaja W singleIM :"+cls.getName() + " parent " + parentClass.getName() );
+//            for(var i : parentClass.getFields()){
+//                System.out.println(i);
+//            }
+
             TableSchema tableSchema = inheritanceMapping.getTableSchema(parentClass.getFields()[0].getName());
             tableSchema.addColumns(createColumns(fields));
 
-            Map<String,TableSchema> mapping = buildMapping(fields,tableSchema);
+            final Map<String,TableSchema> mapping = buildMapping(fields,tableSchema);
 
             inheritanceMapping.union(mapping);
 
 
+//            databaseSchema.addMapping(cls,inheritanceMapping);
+//
+//
+//            return inheritanceMapping;
+
+                return databaseSchema.addMapping(cls,inheritanceMapping);
         }
-        databaseSchema.addMapping(cls,inheritanceMapping);
 
+//        databaseSchema.addMapping(cls,inheritanceMapping);
+//
+//
+//        return inheritanceMapping;
 
-        return inheritanceMapping;
 
     }
 
@@ -87,3 +109,4 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 
 
 }
+

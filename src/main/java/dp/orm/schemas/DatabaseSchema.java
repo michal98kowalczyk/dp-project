@@ -21,8 +21,9 @@ public class DatabaseSchema {
         return classToTable.get(cls);
     }
 
-    public void addMapping(Class<?> cls, InheritanceMapping mapping){
+    public InheritanceMapping addMapping(Class<?> cls, InheritanceMapping mapping){
         this.classToTable.put(cls,mapping);
+        return mapping;
     }
 
     public Set<TableSchema> getTables(){

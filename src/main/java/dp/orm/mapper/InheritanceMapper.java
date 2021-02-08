@@ -2,6 +2,8 @@ package dp.orm.mapper;
 
 import dp.orm.annotations.DatabaseField;
 import dp.orm.annotations.Id;
+import dp.orm.exceptions.MultipleIdException;
+import dp.orm.exceptions.NoIdFieldException;
 import dp.orm.mapping.InheritanceMapping;
 import dp.orm.schemas.ColumnSchema;
 
@@ -25,9 +27,9 @@ public abstract class InheritanceMapper {
                 .collect(Collectors.toList());
 
         if (idArray.size() > 1){
-            throw new RuntimeException();
+            throw new MultipleIdException("mutliple ids");
         }else if (idArray.isEmpty()){
-            throw new RuntimeException();
+            throw new NoIdFieldException("no id field ");
         }
 
         return new ColumnSchema(idArray.get(0));

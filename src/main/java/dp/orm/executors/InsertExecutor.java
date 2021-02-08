@@ -72,8 +72,13 @@ public class InsertExecutor {
 
 
         try(Connection connection = dataSource.getConnection()) {
+            System.out.println("Query "+ query);
+
             Statement statement = connection.createStatement();
+
             statement.execute(query);
+
+
             log.info("Insertion done "+object.getClass().toString());
         } catch (SQLException e) {
             throw new InsertException("Error during insertion "+object.toString(),e);
