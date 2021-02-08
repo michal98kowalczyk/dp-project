@@ -49,16 +49,17 @@ public class CreateQuery extends QueryBuilder{
                 query.append("SERIAL");
             }else {
                 query.append(columnSchema.getSqlType()=="VARCHAR"  ? "TEXT" : columnSchema.getSqlType());
+
             }
-
-
             if (!columnSchema.isNullable()){
                 query.append(" ");
                 query.append("NOT NULL");
             }
+
+
             query.append(",\n");
 
-
+//            System.out.println("query tutaj "+query);
 
 
         });

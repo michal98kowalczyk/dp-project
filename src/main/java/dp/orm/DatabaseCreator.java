@@ -53,13 +53,16 @@ public class DatabaseCreator implements CommandLineRunner {
                 e.printStackTrace();
             }
 
-
+            System.out.println("Znaleziozna klasa "+cls.getName());
             inheritanceMapper.map(cls);
         });
 
         classes.forEach(cls -> {
             InheritanceMapping mapping = databaseSchema.getMapping(cls);
             databaseSchema.addTables(mapping.getAllTableSchema());
+
+//            System.out.println("DB creator all table schema");
+//            mapping.getAllTableSchema().forEach(f->System.out.println(f));
 
             OrmManager.addDao(cls,new Dao<>(dataSource,cls,mapping));
         });

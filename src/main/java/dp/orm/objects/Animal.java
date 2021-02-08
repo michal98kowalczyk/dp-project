@@ -3,6 +3,7 @@ package dp.orm.objects;
 import dp.orm.annotations.DatabaseField;
 import dp.orm.annotations.DatabaseTable;
 import dp.orm.annotations.Id;
+import dp.orm.mapping.InheritanceMappingType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@DatabaseTable
+@DatabaseTable(inheritanceType = InheritanceMappingType.CLASS_TABLE)
 public class Animal {
 
     @Id
@@ -22,6 +23,5 @@ public class Animal {
 
 
 
-    @DatabaseField
-    public String name;
+
 }

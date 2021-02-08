@@ -48,6 +48,9 @@ public class ColumnSchema {
 
             this.isGeneratedId = field.getAnnotation(Id.class).
                     generated();
+            System.out.println("czy id bedzie generowane" +field.getAnnotation(Id.class).
+                    generated());
+
         }else{
             this.isGeneratedId = false;
 
