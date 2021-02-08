@@ -35,8 +35,8 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
             TableSchema tableSchema = buildTableSchema(cls,fields);
             Map<String,TableSchema> mapping = buildMapping(fields,tableSchema);
 
-            databaseSchema.addMapping(cls,new InheritanceMapping(mapping));
-            return new InheritanceMapping(mapping);
+            inheritanceMapping = new InheritanceMapping(mapping);
+
         }else {
 
             inheritanceMapping = databaseSchema.getMapping(parentClass);
@@ -56,10 +56,9 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 
             inheritanceMapping.union(mapping);
 
-            databaseSchema.addMapping(cls,inheritanceMapping);
-
 
         }
+        databaseSchema.addMapping(cls,inheritanceMapping);
 
 
         return inheritanceMapping;
