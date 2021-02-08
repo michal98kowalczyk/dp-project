@@ -61,7 +61,7 @@ public class InsertQuery extends QueryBuilder {
 
 
         tableSchemaSet.forEach(tableSchema -> tableSchemaStringBuilderMap.get(tableSchema).append(tableSchema.getName())
-                .append(" ( "));
+                .append("("));
 
         return this;
     }
@@ -75,7 +75,7 @@ public class InsertQuery extends QueryBuilder {
                 stringBuilder.append(columnSchema.getColumnName()).append(",");
             });
 
-            stringBuilder.delete(stringBuilder.length()-2,stringBuilder.length()-1);
+            stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
             stringBuilder.append(") VALUES (");
 
 
@@ -99,7 +99,7 @@ public class InsertQuery extends QueryBuilder {
                     if (obj == null){
                         stringBuilder.append(parseNullableField(object,columnSchema));
                     }else if (obj.getClass() == String.class){
-                        stringBuilder.append("'").append(cls.cast(obj).toString()).append(", ");
+                        stringBuilder.append("'").append(cls.cast(obj).toString()).append("', ");
                     }else{
                         stringBuilder.append(obj.toString()).append(", ");
                     }

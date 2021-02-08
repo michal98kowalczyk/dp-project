@@ -21,7 +21,12 @@ public class OrmApp {
         Dog dog = new Dog();
         dog.setName("first");
         dog.setType("dog");
-        dog.setOwner("michal");
+//        dog.setOwner("michal");
+
+        Dao<Dog> daoDog = OrmManager.getDao(Dog.class);
+
+        daoDog.insert(dog);
+
 //        System.out.println(dog.toString());
 
 //        System.out.println(NameUtils.extractTableName(Dog.class));
