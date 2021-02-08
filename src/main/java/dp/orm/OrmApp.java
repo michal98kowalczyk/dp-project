@@ -22,12 +22,12 @@ public class OrmApp {
         dog.setName("first");
         dog.setType("dog");
         dog.setOwner("michal");
-        System.out.println(dog.toString());
+//        System.out.println(dog.toString());
 
-        System.out.println(NameUtils.extractTableName(Dog.class));
-        List<Field> fields = FieldUtils.getAllFields(Dog.class);
-
-        fields.forEach(field -> System.out.println(field));
-        System.out.println(NameUtils.extractColumnName(fields.get(0)));
+//        System.out.println(NameUtils.extractTableName(Dog.class));
+//        List<Field> fields = FieldUtils.getAllFields(Dog.class);
+//
+//        fields.forEach(field -> System.out.println(field));
+//        System.out.println(NameUtils.extractColumnName(fields.get(0)));
     }
 }
