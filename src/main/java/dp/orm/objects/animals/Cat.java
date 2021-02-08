@@ -1,4 +1,4 @@
-package dp.orm.objects;
+package dp.orm.objects.animals;
 
 import dp.orm.annotations.DatabaseField;
 import dp.orm.annotations.DatabaseTable;
@@ -11,10 +11,10 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString(callSuper = true) @DatabaseTable(inheritanceType = InheritanceMappingType.CONCRETE_TABLE)
+@ToString(callSuper = true) @DatabaseTable(inheritanceType = InheritanceMappingType.CLASS_TABLE)
 public class Cat  extends Animal{
 
-
+    @Id
     @DatabaseField
     public  int catId;
 

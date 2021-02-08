@@ -2,22 +2,22 @@ package dp.orm;
 
 
 
-import dp.orm.objects.Animal;
-import dp.orm.objects.Cat;
-import dp.orm.objects.Dog;
-import dp.orm.utlis.FieldUtils;
-import dp.orm.utlis.NameUtils;
+import dp.orm.objects.animals.Cat;
+import dp.orm.objects.animals.Dog;
+//import dp.orm.objects.users.User;
+import dp.orm.objects.players.Bowler;
+import dp.orm.objects.players.Cricketer;
+import dp.orm.objects.players.Footballer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.lang.reflect.Field;
-import java.util.List;
 
 @SpringBootApplication
 public class OrmApp {
     public static void main(String[] args){
 
         SpringApplication.run(OrmApp.class,args);
+
+//        class table ----------------------
 
         Dog dog = new Dog();
         dog.setId(0);
@@ -38,6 +38,56 @@ public class OrmApp {
         Dao<Cat> daoCat = OrmManager.getDao(Cat.class);
 
         daoCat.insert(cat);
+
+
+
+        //        concrete table ----------------------
+
+        Footballer footballer = new Footballer();
+        footballer.setId(0);
+        footballer.setClub("bayern");
+        footballer.setName("robercik");
+        Dao<Footballer> daoFoot = OrmManager.getDao(Footballer.class);
+
+        daoFoot.insert(footballer);
+
+        Cricketer cricketer = new Cricketer();
+        cricketer.setId(0);
+        cricketer.setBattingAverage((float) 2.0);
+        cricketer.setName("cricket");
+        Dao<Cricketer> daoCri = OrmManager.getDao(Cricketer.class);
+
+        daoCri.insert(cricketer);
+
+        Bowler bowler = new Bowler();
+        bowler.setId(0);
+        bowler.setName("bowl");
+        bowler.setBowlingAverage(2.2);
+        bowler.setBattingAverage((float) 1.0);
+        Dao<Bowler> daoBow = OrmManager.getDao(Bowler.class);
+
+        daoBow.insert(bowler);
+
+
+
+
+
+
+
+
+        //        single table ----------------------
+//        User user = new User();
+//        user.setId(0);
+//        user.setUsername("michal");
+//        Dao<User> userDao = OrmManager.getDao(User.class);
+//        userDao.insert(user);
+
+
+
+
+
+
+
 
 //        System.out.println(dog.toString());
 
