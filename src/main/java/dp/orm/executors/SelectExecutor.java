@@ -25,6 +25,7 @@ public class SelectExecutor {
     private InheritanceMapping inheritanceMapping;
     private ObjectAssembler objectAssembler;
 
+
     public <T> T findById(int id, Class<T> clazz) {
         QueryBuilder builder = new SelectQueryBuilder(inheritanceMapping);
         QueryBuildDirector<T> queryBuildDirector = new QueryBuildDirector<>(builder);

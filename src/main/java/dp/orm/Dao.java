@@ -1,5 +1,6 @@
 package dp.orm;
 
+import dp.orm.assemblers.ObjectAssembler;
 import dp.orm.executors.DeleteExecutor;
 import dp.orm.executors.InsertExecutor;
 import dp.orm.executors.SelectExecutor;
@@ -28,6 +29,7 @@ public class Dao<T> {
         this.selectExecutor = SelectExecutor.builder()
                 .dataSource(dataSource)
                 .inheritanceMapping(inheritanceMapping)
+                .objectAssembler(new ObjectAssembler<>())
                 .build();
     }
 
