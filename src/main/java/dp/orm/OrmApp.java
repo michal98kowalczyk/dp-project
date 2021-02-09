@@ -5,6 +5,7 @@ package dp.orm;
 import dp.orm.objects.animals.Cat;
 import dp.orm.objects.animals.Dog;
 //import dp.orm.objects.users.User;
+import dp.orm.objects.persons.Employee;
 import dp.orm.objects.players.Bowler;
 import dp.orm.objects.players.Cricketer;
 import dp.orm.objects.players.Footballer;
@@ -82,6 +83,13 @@ public class OrmApp {
 //        Dao<User> userDao = OrmManager.getDao(User.class);
 //        userDao.insert(user);
 
+
+        Employee emp = new Employee();
+        emp.setId(0);
+        emp.setName("empl");
+        emp.setCompany("comp");
+        Dao<Employee> daoEmp = OrmManager.getDao(Employee.class);
+        daoEmp.insert(emp);
 
 
 
