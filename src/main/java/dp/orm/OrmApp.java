@@ -22,6 +22,7 @@ public class OrmApp {
 
         Dog dog = new Dog();
         dog.setId(0);
+        dog.setDogId(0);
         dog.setName("first");
         dog.setType("dog");
         dog.setOwner("michal");
@@ -32,17 +33,27 @@ public class OrmApp {
 
         Cat cat = new Cat();
         cat.setId(1);
+        cat.setCatId(1);
         cat.setName("kot");
         cat.setType("cat");
         cat.setOwner("michal");
 
+        Cat cat2 = new Cat();
+        cat2.setId(2);
+        cat2.setCatId(2);
+        cat2.setName("kot2");
+        cat2.setType("cat2");
+        cat2.setOwner("michal");
+
         Dao<Cat> daoCat = OrmManager.getDao(Cat.class);
 
         daoCat.insert(cat);
+        daoCat.insert(cat2);
+        daoCat.delete(1);
 
 
 
-        //        concrete table ----------------------
+//        //        concrete table ----------------------
 
         Footballer footballer = new Footballer();
         footballer.setId(0);
@@ -77,11 +88,7 @@ public class OrmApp {
 
 
         //        single table ----------------------
-//        User user = new User();
-//        user.setId(0);
-//        user.setUsername("michal");
-//        Dao<User> userDao = OrmManager.getDao(User.class);
-//        userDao.insert(user);
+
 
 
         Employee emp = new Employee();
@@ -92,6 +99,14 @@ public class OrmApp {
         daoEmp.insert(emp);
 
 
+        Employee emp2 = new Employee();
+        emp2.setId(1);
+        emp2.setName("empl2");
+        emp2.setCompany("comp2");
+
+        daoEmp.insert(emp2);
+
+        daoEmp.delete(0);
 
 
 

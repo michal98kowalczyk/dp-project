@@ -31,7 +31,7 @@ public class DatabaseCreator implements CommandLineRunner {
     @Autowired
     private CreateExecutor createExecutor;
 
-    private String packageWithObjects = "dp.orm.objects";
+    private String packageWithObjects = "dp.orm";
 
     @Override
     public void run(String... args) throws Exception {
