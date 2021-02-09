@@ -94,13 +94,12 @@ public class UpdateQuery extends QueryBuilder{
             continue;
         }
 
-        if (tmpObj.getClass() == String.class) query.append("\'");
+        if (tmpObj.getClass() == String.class) {
+            query.append("\'").append(tmpObj).append("\'");
 
-
-        query.append(tmpObj);
-
-
-        if (tmpObj.getClass() == String.class) query.append("\'");
+        }else {
+            query.append(tmpObj);
+        }
 
 
         query.append(",");
