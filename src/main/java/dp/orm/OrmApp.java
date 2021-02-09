@@ -50,10 +50,11 @@ public class OrmApp {
         daoCat.insert(cat);
         daoCat.insert(cat2);
         daoCat.delete(1);
+        cat2.setName("kotttt2");
+        daoCat.update(cat2);
 
 
-
-//        //        concrete table ----------------------
+////        //        concrete table ----------------------
 
         Footballer footballer = new Footballer();
         footballer.setId(0);
@@ -108,6 +109,15 @@ public class OrmApp {
 
         daoEmp.delete(0);
 
+
+        Employee emp3 = new Employee();
+        emp3.setId(2);
+        emp3.setName("emp3");
+        emp3.setCompany("comp2");
+
+        daoEmp.insert(emp3);
+        emp3.setName("CNAMe3333");
+        daoEmp.update(emp3);
 
 
 
