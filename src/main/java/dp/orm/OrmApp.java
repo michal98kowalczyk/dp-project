@@ -1,7 +1,6 @@
 package dp.orm;
 
 
-
 import dp.orm.objects.animals.Cat;
 import dp.orm.objects.animals.Dog;
 //import dp.orm.objects.users.User;
@@ -14,9 +13,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class OrmApp {
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
-        SpringApplication.run(OrmApp.class,args);
+        SpringApplication.run(OrmApp.class, args);
 
 //        class table ----------------------
 
@@ -50,7 +49,7 @@ public class OrmApp {
         daoCat.insert(cat);
         daoCat.insert(cat2);
         daoCat.delete(1);
-
+        daoCat.findAll().forEach(System.out::println);
 
 
 //        //        concrete table ----------------------
@@ -81,14 +80,7 @@ public class OrmApp {
         daoBow.insert(bowler);
 
 
-
-
-
-
-
-
         //        single table ----------------------
-
 
 
         Employee emp = new Employee();
@@ -107,9 +99,6 @@ public class OrmApp {
         daoEmp.insert(emp2);
 
         daoEmp.delete(0);
-
-
-
 
 
 //        System.out.println(dog.toString());
