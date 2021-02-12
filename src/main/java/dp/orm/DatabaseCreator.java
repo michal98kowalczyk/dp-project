@@ -57,9 +57,16 @@ public class DatabaseCreator implements CommandLineRunner {
             inheritanceMapper.map(cls);
         });
 
+
+
         classes.forEach(cls -> {
+
+
+
             InheritanceMapping mapping = databaseSchema.getMapping(cls);
             databaseSchema.addTables(mapping.getAllTableSchema());
+
+            System.out.println(cls.getClass().getName() + " "+ mapping);
 
 //            System.out.println("DB creator all table schema");
 //            mapping.getAllTableSchema().forEach(f->System.out.println(f));

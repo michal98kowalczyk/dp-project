@@ -69,52 +69,81 @@ public class InsertQuery extends QueryBuilder {
     @Override
     QueryBuilder setFields() {
 
-        tableSchemaSet.forEach(tableSchema -> {
-            StringBuilder stringBuilder = tableSchemaStringBuilderMap.get(tableSchema);
-            tableSchema.getColumns().forEach(columnSchema -> {
-                stringBuilder.append(columnSchema.getColumnName()).append(",");
-            });
+//        tableSchemaSet.forEach(tableSchema -> {
+//            StringBuilder stringBuilder = tableSchemaStringBuilderMap.get(tableSchema);
+//            tableSchema.getColumns().forEach(columnSchema -> {
+//                stringBuilder.append(columnSchema.getColumnName()).append(",");
+//            });
+//
+//            stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
+//            stringBuilder.append(") VALUES (");
+//
+//
+//        });
 
-            stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
+        for (TableSchema tableSchema : tableSchemaSet) {
+            StringBuilder stringBuilder = tableSchemaStringBuilderMap.get(tableSchema);
+//            tableSchema.getColumns().forEach(columnSchema -> {
+//                stringBuilder.append(columnSchema.getColumnName()).append(",");
+//            });
+            for (ColumnSchema columnSchema : tableSchema.getColumns()) {
+                System.out.println("column name "+columnSchema.getColumnName());
+                System.out.println("id w insert  "+tableSchema.getId().getColumnName());
+                System.out.println("id generowane?  "+columnSchema.isGeneratedId()+"\n");
+                if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
+                    continue;
+                }
+                stringBuilder.append(columnSchema.getColumnName()).append(",");
+
+            }
+
+            stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length());
             stringBuilder.append(") VALUES (");
 
 
-        });
+        }
+
+
         return this;
     }
 
     @Override
     QueryBuilder setValues() throws InvocationTargetException, IllegalAccessException {
 
-        tableSchemaSet.forEach(tableSchema -> {
+        for (TableSchema tableSchema : tableSchemaSet) {
             StringBuilder stringBuilder = tableSchemaStringBuilderMap.get(tableSchema);
 
-            tableSchema.getColumns().forEach(columnSchema -> {
+            for (ColumnSchema columnSchema : tableSchema.getColumns()) {
+
+                if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
+                    continue;
+                }
+
                 Class cls = columnSchema.getJavaType();
                 Object obj;
 
                 try {
                     obj = columnSchema.get(object);
 
-                    if (obj == null){
-                        stringBuilder.append(parseNullableField(object,columnSchema));
-                    }else if (obj.getClass() == String.class){
+                    if (obj == null) {
+                        stringBuilder.append(parseNullableField(object, columnSchema));
+                    } else if (obj.getClass() == String.class) {
                         stringBuilder.append("'").append(cls.cast(obj).toString()).append("', ");
-                    }else{
+                    } else {
                         stringBuilder.append(obj.toString()).append(", ");
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     stringBuilder.append("NULL, ");
 
                 }
 
 
-            });
+            }
 
-            stringBuilder.delete(stringBuilder.length()-2,stringBuilder.length()-1);
+            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length() - 1);
             stringBuilder.append(");");
 
-        });
+        }
 
         return this;
 

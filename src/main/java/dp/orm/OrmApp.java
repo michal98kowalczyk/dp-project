@@ -5,10 +5,11 @@ import dp.orm.objects.animals.Animal;
 import dp.orm.objects.animals.Cat;
 import dp.orm.objects.animals.Dog;
 //import dp.orm.objects.users.User;
-import dp.orm.objects.persons.Employee;
+import dp.orm.objects.persons.ZEmployee;
 import dp.orm.objects.players.Bowler;
 import dp.orm.objects.players.Cricketer;
 import dp.orm.objects.players.Footballer;
+import dp.orm.objects.players.Player;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -21,8 +22,8 @@ public class OrmApp {
 //        class table ----------------------
 
         Dog dog = new Dog();
-        dog.setId(0);
-        dog.setDogId(0);
+//        dog.setId(0);
+//        dog.setDogId(0);
         dog.setName("first");
         dog.setType("dog");
         dog.setOwner("michal");
@@ -32,15 +33,15 @@ public class OrmApp {
         daoDog.insert(dog);
 
         Cat cat = new Cat();
-        cat.setId(1);
-        cat.setCatId(1);
+//        cat.setId(1);
+//        cat.setCatId(1);
         cat.setName("kot");
         cat.setType("cat");
         cat.setOwner("michal");
 
         Cat cat2 = new Cat();
-        cat2.setId(2);
-        cat2.setCatId(2);
+//        cat2.setId(2);
+//        cat2.setCatId(2);
         cat2.setName("kot2");
         cat2.setType("cat2");
         cat2.setOwner("michal");
@@ -56,8 +57,14 @@ public class OrmApp {
 
 ////        //        concrete table ----------------------
 
+
+        Player player0 = new Player();
+        player0.setName("player0");
+        Dao<Player> daoPlayer = OrmManager.getDao(Player.class);
+        daoPlayer.insert(player0);
+
         Footballer footballer = new Footballer();
-        footballer.setId(0);
+//        footballer.setId(0);
         footballer.setClub("bayern");
         footballer.setName("robercik");
         Dao<Footballer> daoFoot = OrmManager.getDao(Footballer.class);
@@ -65,7 +72,7 @@ public class OrmApp {
         daoFoot.insert(footballer);
 
         Cricketer cricketer = new Cricketer();
-        cricketer.setId(0);
+//        cricketer.setId(0);
         cricketer.setBattingAverage((float) 2.0);
         cricketer.setName("cricket");
         Dao<Cricketer> daoCri = OrmManager.getDao(Cricketer.class);
@@ -73,10 +80,10 @@ public class OrmApp {
         daoCri.insert(cricketer);
 
         Bowler bowler = new Bowler();
-        bowler.setId(0);
+//        bowler.setId(0);
         bowler.setName("bowl");
         bowler.setBowlingAverage(2.2);
-        bowler.setBattingAverage((float) 1.0);
+        bowler.setBattingAverage((float) 1.2);
         Dao<Bowler> daoBow = OrmManager.getDao(Bowler.class);
 
         daoBow.insert(bowler);
@@ -85,16 +92,16 @@ public class OrmApp {
         //        single table ----------------------
 
 
-        Employee emp = new Employee();
-        emp.setId(0);
+        ZEmployee emp = new ZEmployee();
+//        emp.setId(0);
         emp.setName("empl");
         emp.setCompany("comp");
-        Dao<Employee> daoEmp = OrmManager.getDao(Employee.class);
+        Dao<ZEmployee> daoEmp = OrmManager.getDao(ZEmployee.class);
         daoEmp.insert(emp);
 
 
-        Employee emp2 = new Employee();
-        emp2.setId(1);
+        ZEmployee emp2 = new ZEmployee();
+//        emp2.setId(1);
         emp2.setName("empl2");
         emp2.setCompany("comp2");
 
@@ -103,8 +110,8 @@ public class OrmApp {
         daoEmp.delete(0);
 
 
-        Employee emp3 = new Employee();
-        emp3.setId(2);
+        ZEmployee emp3 = new ZEmployee();
+//        emp3.setId(2);
         emp3.setName("emp3");
         emp3.setCompany("comp2");
 
@@ -115,7 +122,7 @@ public class OrmApp {
         Dao<Animal> daoAnimal = OrmManager.getDao(Animal.class);
         daoAnimal.findAll().forEach(System.out::println);
 
-        System.out.println(daoFoot.findById(0));
+        System.out.println(daoCat.findById(2));
 
 
 //        System.out.println(dog.toString());

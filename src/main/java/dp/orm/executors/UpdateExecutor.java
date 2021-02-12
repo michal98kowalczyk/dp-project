@@ -42,7 +42,7 @@ public class UpdateExecutor {
 
 
         try (Connection connection = dataSource.getConnection()) {
-            System.out.println("UPDATE QUERY "+query);
+            System.out.println(query);
             log.info("Update " + object.getClass().getName());
 
             Statement statement = connection.createStatement();

@@ -47,7 +47,7 @@ public class DeleteExecutor {
 
 
         try(Connection connection = dataSource.getConnection()) {
-            System.out.println("Query "+ query);
+            System.out.println(query);
 
             Statement statement = connection.createStatement();
 

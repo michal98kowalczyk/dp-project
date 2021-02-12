@@ -22,7 +22,7 @@ public class DatabaseSchema {
     }
 
     public InheritanceMapping addMapping(Class<?> cls, InheritanceMapping mapping){
-        this.classToTable.put(cls,mapping);
+        classToTable.put(cls,mapping);
         return mapping;
     }
 
