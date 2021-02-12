@@ -7,6 +7,7 @@ import dp.orm.mapping.InheritanceMapping;
 import dp.orm.query.QueryBuilder;
 import dp.orm.query.QueryDirector;
 import dp.orm.query.UpdateQuery;
+import dp.orm.schemas.DatabaseSchema;
 import lombok.Builder;
 import lombok.extern.apachecommons.CommonsLog;
 
@@ -16,6 +17,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 
 @CommonsLog
 @Builder
@@ -25,15 +27,18 @@ public class UpdateExecutor {
     private InheritanceMapping inheritanceMapping;
 
 
-    public <T> ResultSet execute(T object) {
+    public <T> ResultSet execute(T object,int id) {
 
         QueryBuilder queryBuilder = new UpdateQuery(inheritanceMapping);
         QueryDirector<T> queryDirector = new QueryDirector<>(queryBuilder);
         String query;
 
 
+
+
+
         try {
-            query = queryDirector.withObject(object).build();
+            query = queryDirector.withObject(object).withCondition(id).build();
         } catch (IllegalAccessException e) {
             throw new UpdateException("Error during update "+object.toString(),e);
         } catch (InvocationTargetException e) {

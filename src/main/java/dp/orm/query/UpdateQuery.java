@@ -52,12 +52,24 @@ public class UpdateQuery extends QueryBuilder{
 
     @Override
     QueryBuilder setFields() {
-        query.append(" SET (");
+        query.append(" SET  (");
         Object tmpObj;
+
+//        System.out.println(tableSchema.getColumns().size());
+        //moze wiecie jak inaczej to obsluzyc
 
 
 
         for (ColumnSchema columnSchema : tableSchema.getColumns()) {
+
+            if (tableSchema.getColumns().size() == 2){
+                query.deleteCharAt(query.length()-1);
+            }
+
+            if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
+                continue;
+            }
+
             try {
                 tmpObj = columnSchema.get(object);
             } catch (Exception e) {
@@ -68,7 +80,14 @@ public class UpdateQuery extends QueryBuilder{
             query.append(columnSchema.getColumnName()).append(", ");
         }
 
-        query.delete(query.length() - 2, query.length() - 1).append(") = (");
+        query.delete(query.length() - 2, query.length() - 1);
+
+        if (tableSchema.getColumns().size() == 2){
+            query.append(" = ");
+        }else{
+            query.append(") = (");
+        }
+
 
 
 
@@ -81,6 +100,10 @@ public class UpdateQuery extends QueryBuilder{
         Object tmpObj;
 
         for (ColumnSchema columnSchema : tableSchema.getColumns()) {
+
+            if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
+                continue;
+            }
 
             try{
             tmpObj = columnSchema.get(object);
@@ -118,8 +141,13 @@ public class UpdateQuery extends QueryBuilder{
     @Override
     QueryBuilder withCondition(int id, boolean isConditionSet) {
         String columnName = tableSchema.getId().getColumnName();
-        Object obj = tableSchema.getId().get(object);
-        query.append(") WHERE ").append(columnName).append(" = ").append(obj).append(";");
+//        Object obj = tableSchema.getId().get(object);
+
+        if (tableSchema.getColumns().size() != 2){
+            query.append(") ");
+        }
+
+        query.append(" WHERE ").append(columnName).append(" = ").append(id).append(";");
 
         return this;
     }
