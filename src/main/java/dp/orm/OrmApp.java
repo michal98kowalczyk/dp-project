@@ -5,7 +5,7 @@ import dp.orm.objects.animals.Animal;
 import dp.orm.objects.animals.Cat;
 import dp.orm.objects.animals.Dog;
 //import dp.orm.objects.users.User;
-import dp.orm.objects.persons.ZEmployee;
+import dp.orm.objects.persons.Employee;
 import dp.orm.objects.players.Bowler;
 import dp.orm.objects.players.Cricketer;
 import dp.orm.objects.players.Footballer;
@@ -86,14 +86,14 @@ public class OrmApp {
         //        single table ----------------------
 
 
-        ZEmployee emp = new ZEmployee();
+        Employee emp = new Employee();
         emp.setName("empl");
         emp.setCompany("comp");
-        Dao<ZEmployee> daoEmp = OrmManager.getDao(ZEmployee.class);
+        Dao<Employee> daoEmp = OrmManager.getDao(Employee.class);
         daoEmp.insert(emp);
 
 
-        ZEmployee emp2 = new ZEmployee();
+        Employee emp2 = new Employee();
         emp2.setName("empl2");
         emp2.setCompany("comp2");
 
@@ -102,7 +102,7 @@ public class OrmApp {
         daoEmp.delete(4);
 
 
-        ZEmployee emp3 = new ZEmployee();
+        Employee emp3 = new Employee();
         emp3.setName("emp3");
         emp3.setCompany("comp2");
 

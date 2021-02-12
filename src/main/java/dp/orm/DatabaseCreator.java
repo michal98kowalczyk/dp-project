@@ -69,7 +69,7 @@ public class DatabaseCreator implements CommandLineRunner {
             databaseSchema.addTables(mapping.getAllTableSchema());
 
 
-//            System.out.println(cls.getName() + " jej mapping to "+ databaseSchema.getMapping(cls));
+            System.out.println(cls.getName() + " jej mapping to "+ databaseSchema.getMapping(cls));
 
 //            System.out.println("DB creator all table schema");
 //            mapping.getAllTableSchema().forEach(f->System.out.println(f));
