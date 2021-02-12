@@ -47,8 +47,8 @@ public class Dao<T> {
         deleteExecutor.execute(id, this.cls);
     }
 
-    public void update(T object) {
-        updateExecutor.execute(object);
+    public void update(T object,int id) {
+        updateExecutor.execute(object,id);
     }
 
     public List<T> findAll() {

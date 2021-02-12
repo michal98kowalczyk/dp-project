@@ -22,8 +22,7 @@ public class OrmApp {
 //        class table ----------------------
 
         Dog dog = new Dog();
-//        dog.setId(0);
-//        dog.setDogId(0);
+
         dog.setName("first");
         dog.setType("dog");
         dog.setOwner("michal");
@@ -33,15 +32,12 @@ public class OrmApp {
         daoDog.insert(dog);
 
         Cat cat = new Cat();
-//        cat.setId(1);
-//        cat.setCatId(1);
+
         cat.setName("kot");
         cat.setType("cat");
         cat.setOwner("michal");
 
         Cat cat2 = new Cat();
-//        cat2.setId(2);
-//        cat2.setCatId(2);
         cat2.setName("kot2");
         cat2.setType("cat2");
         cat2.setOwner("michal");
@@ -50,9 +46,9 @@ public class OrmApp {
 
         daoCat.insert(cat);
         daoCat.insert(cat2);
-        daoCat.delete(1);
+        daoCat.delete(0);
         cat2.setName("kotttt2");
-        daoCat.update(cat2);
+        daoCat.update(cat2,8);
 
 
 ////        //        concrete table ----------------------
@@ -64,7 +60,7 @@ public class OrmApp {
         daoPlayer.insert(player0);
 
         Footballer footballer = new Footballer();
-//        footballer.setId(0);
+
         footballer.setClub("bayern");
         footballer.setName("robercik");
         Dao<Footballer> daoFoot = OrmManager.getDao(Footballer.class);
@@ -72,7 +68,6 @@ public class OrmApp {
         daoFoot.insert(footballer);
 
         Cricketer cricketer = new Cricketer();
-//        cricketer.setId(0);
         cricketer.setBattingAverage((float) 2.0);
         cricketer.setName("cricket");
         Dao<Cricketer> daoCri = OrmManager.getDao(Cricketer.class);
@@ -80,7 +75,6 @@ public class OrmApp {
         daoCri.insert(cricketer);
 
         Bowler bowler = new Bowler();
-//        bowler.setId(0);
         bowler.setName("bowl");
         bowler.setBowlingAverage(2.2);
         bowler.setBattingAverage((float) 1.2);
@@ -93,7 +87,6 @@ public class OrmApp {
 
 
         ZEmployee emp = new ZEmployee();
-//        emp.setId(0);
         emp.setName("empl");
         emp.setCompany("comp");
         Dao<ZEmployee> daoEmp = OrmManager.getDao(ZEmployee.class);
@@ -101,36 +94,29 @@ public class OrmApp {
 
 
         ZEmployee emp2 = new ZEmployee();
-//        emp2.setId(1);
         emp2.setName("empl2");
         emp2.setCompany("comp2");
 
         daoEmp.insert(emp2);
 
-        daoEmp.delete(0);
+        daoEmp.delete(4);
 
 
         ZEmployee emp3 = new ZEmployee();
-//        emp3.setId(2);
         emp3.setName("emp3");
         emp3.setCompany("comp2");
 
         daoEmp.insert(emp3);
-        emp3.setName("CNAMe3333");
-        daoEmp.update(emp3);
+        emp3.setName("e3333");
+        daoEmp.update(emp3,2);
 
         Dao<Animal> daoAnimal = OrmManager.getDao(Animal.class);
         daoAnimal.findAll().forEach(System.out::println);
 
-        System.out.println(daoCat.findById(2));
+        System.out.println(daoCat.findById(5));
 
 
-//        System.out.println(dog.toString());
 
-//        System.out.println(NameUtils.extractTableName(Dog.class));
-//        List<Field> fields = FieldUtils.getAllFields(Dog.class);
-//
-//        fields.forEach(field -> System.out.println(field));
-//        System.out.println(NameUtils.extractColumnName(fields.get(0)));
+
     }
 }
