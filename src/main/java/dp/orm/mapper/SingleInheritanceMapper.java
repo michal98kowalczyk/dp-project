@@ -32,6 +32,7 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
         if (parentClass.equals(Object.class)){
 
             List<Field> fields = filterFields(new ArrayList<>(Arrays.asList(cls.getDeclaredFields())));
+            System.out.println("Pola to "+fields);
 
 
             TableSchema tableSchema = buildTableSchema(cls,fields);
@@ -54,16 +55,20 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 
                 databaseSchema.addMapping(cls,inheritanceMapping);
             }
-
+            System.out.println("Mapping rodzica "+inheritanceMapping);
             List<Field> fields = filterFields(new ArrayList<>(Arrays.asList(cls.getDeclaredFields())));
-
+            System.out.println("Pola to "+fields);
 //            System.out.println("Pola ktore nie  dzialaja W singleIM :"+cls.getName() + " parent " + parentClass.getName() );
 //            for(var i : parentClass.getFields()){
 //                System.out.println(i);
 //            }
 
             TableSchema tableSchema = inheritanceMapping.getTableSchema(parentClass.getFields()[0].getName());
+            System.out.println("table schema przed  "+tableSchema.getColumns().size());
+            System.out.println("dodane kolumny  "+createColumns(fields));
             tableSchema.addColumns(createColumns(fields));
+
+            System.out.println("table schema po dodaniu  "+tableSchema.getColumns().size());
 
             final Map<String,TableSchema> mapping = buildMapping(fields,tableSchema);
 

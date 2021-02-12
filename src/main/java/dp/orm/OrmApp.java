@@ -19,7 +19,7 @@ public class OrmApp {
 
         SpringApplication.run(OrmApp.class, args);
 
-//        class table ----------------------
+   //     class table ----------------------
 
         Dog dog = new Dog();
 

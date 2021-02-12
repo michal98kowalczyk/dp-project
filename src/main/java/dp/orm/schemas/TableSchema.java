@@ -29,8 +29,10 @@ public class TableSchema {
         columns.add(column);
     }
 
-    public void addColumns(Collection<ColumnSchema> columns){
-        columns.addAll(columns);
+    public void addColumns(Set<ColumnSchema>  columnsToAdd){
+//        columns.addAll(columns);
+        columnsToAdd.forEach(columnSchema -> this.addColumn(columnSchema));
+
     }
 
 
