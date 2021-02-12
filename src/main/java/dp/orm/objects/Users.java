@@ -1,4 +1,4 @@
-package dp.orm.objects.persons;
+package dp.orm.objects;
 
 import dp.orm.annotations.DatabaseField;
 import dp.orm.annotations.DatabaseTable;
@@ -9,14 +9,12 @@ import lombok.Data;
 
 @Data
 @DatabaseTable(inheritanceType = InheritanceMappingType.SINGLE_TABLE)
-public class Person {
+public class Users {
 
     @Id
     @DatabaseField
     private int id;
 
     @DatabaseField
-    public String name;
-
-
+    public String username;
 }

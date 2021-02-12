@@ -42,6 +42,7 @@ public class CreateExecutor {
 
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
+            System.out.println(query);
             statement.executeUpdate(query);
 
             log.info("Table " + tableSchema.getName() + " created!");

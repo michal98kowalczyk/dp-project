@@ -42,6 +42,7 @@ public class SelectExecutor {
             Statement stmt = conn.createStatement();
 
             log.info("Wykonano select findById(" + id + ")");
+            System.out.println(query);
             ResultSet resultSet = stmt.executeQuery(query);
             resultSet.next();
             return (T) objectAssembler.assemble(clazz, resultSet);
@@ -70,6 +71,7 @@ public class SelectExecutor {
         try (Connection conn = dataSource.getConnection()) {
             Statement stmt = conn.createStatement();
             log.info("Executing select findAll with query: " + query);
+            System.out.println(query);
             ResultSet resultSet = stmt.executeQuery(query);
             return objectAssembler.bulkAssemble(clazz, resultSet);
         } catch (SQLException e) {

@@ -12,12 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-@ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
-@Setter
-@Getter
+@Data
 public class ColumnSchema {
     private Class<?> parent;
 
@@ -59,7 +54,7 @@ public class ColumnSchema {
 
         this.parent = field.getDeclaringClass();
         this.javaType = field.getType();
-        this.sqlType = Java2SqlTypeMapper.getSqlType(this.javaType);
+        this.sqlType = Java2SqlTypeMapper.getSqlType(field.getType());
 
 
         this.isNullable = field.getAnnotation(DatabaseField.class).nullable();
