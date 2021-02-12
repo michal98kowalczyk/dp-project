@@ -29,6 +29,8 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
         Class<? super T > parentClass = cls.getSuperclass();
         InheritanceMapping inheritanceMapping;
 
+        if (databaseSchema.getMapping(cls) != null) return databaseSchema.getMapping(cls);
+
         if (parentClass.equals(Object.class)){
 
             List<Field> fields = filterFields(new ArrayList<>(Arrays.asList(cls.getDeclaredFields())));
@@ -40,9 +42,9 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 
 //            inheritanceMapping = new InheritanceMapping(mapping);
 
-
-
-            return databaseSchema.addMapping(cls,new InheritanceMapping(mapping));
+            InheritanceMapping inheritanceMapping1 = new InheritanceMapping(mapping);
+            databaseSchema.addMapping(cls,inheritanceMapping1);
+            return inheritanceMapping1;
 
         }else {
 
@@ -80,7 +82,8 @@ public class SingleInheritanceMapper  extends InheritanceMapper{
 //
 //            return inheritanceMapping;
 
-                return databaseSchema.addMapping(cls,inheritanceMapping);
+//                return databaseSchema.addMapping(cls,inheritanceMapping);
+            return inheritanceMapping;
         }
 
 //        databaseSchema.addMapping(cls,inheritanceMapping);

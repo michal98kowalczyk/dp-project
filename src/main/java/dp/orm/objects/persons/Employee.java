@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @DatabaseTable(inheritanceType = InheritanceMappingType.SINGLE_TABLE)
-public class ZEmployee extends Person {
+public class Employee extends Person {
 
 
     @DatabaseField
