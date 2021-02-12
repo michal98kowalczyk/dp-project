@@ -77,11 +77,11 @@ public class UpdateQuery extends QueryBuilder{
 
             }
 
-            query.append(columnSchema.getColumnName()).append(" , ");
+            query.append(columnSchema.getColumnName()).append(" ,");
         }
 
-        query.delete(query.length() - 2, query.length() - 1);
-
+//        query.delete(query.length() - 2, query.length() - 1);
+        query.deleteCharAt(query.length()-1);
         if (tableSchema.getColumns().size() == 2){
             query.append(" = ");
         }else{
