@@ -1,5 +1,6 @@
 package dp.orm.schemas;
 
+import dp.orm.ForeignKey.ForeignKey;
 import dp.orm.annotations.DatabaseField;
 import dp.orm.annotations.Id;
 import dp.orm.exceptions.IncorrectIdException;
@@ -30,7 +31,9 @@ public class ColumnSchema {
 
     private boolean isNullable;
 
-    private boolean isForeignKey;
+    private boolean isForeignKey = false;
+
+    private ForeignKey foreignKey = null;
 
     public ColumnSchema(Field field){
 
@@ -50,8 +53,6 @@ public class ColumnSchema {
             this.isGeneratedId = false;
 
         }
-
-
         this.parent = field.getDeclaringClass();
         this.javaType = field.getType();
         this.sqlType = Java2SqlTypeMapper.getSqlType(field.getType());
@@ -61,9 +62,6 @@ public class ColumnSchema {
 
         this.getter = findGetter(field);
         this.setter = findSetter(field);
-
-
-
         }
 
     private Method findSetter(Field field) {
@@ -122,5 +120,16 @@ public class ColumnSchema {
         }
     }
 
+    public void setForeignKey(ForeignKey foreignKey) {
+        this.foreignKey = foreignKey;
+        this.isForeignKey = true;
+    }
 
+    public boolean isForeignKey() {
+        return isForeignKey;
+    }
+
+    public ForeignKey getForeignKey() {
+        return this.foreignKey;
+    }
 }
