@@ -65,7 +65,7 @@ public class CreateQuery extends QueryBuilder {
             addForeignKeyToQuery(query, getForeignKeyFromTableSchema(((TableSchema) object).getColumns()));
         }
         query.append("\n);");
-        System.out.println(query);
+//        System.out.println(query);
 
         return this;
     }
