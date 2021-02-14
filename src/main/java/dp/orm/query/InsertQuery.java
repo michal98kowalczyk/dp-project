@@ -22,23 +22,25 @@ import java.util.*;
 public class InsertQuery extends QueryBuilder {
 
 
-    private DatabaseSchema databaseSchema;
+
 
     private InheritanceMapping inheritanceMapping;
     Map<TableSchema,StringBuilder> tableSchemaStringBuilderMap;
     Set<TableSchema> tableSchemaSet;
     Object object;
     List<Field> fields;
-    String subQuery="";
+
+
 
 
     public InsertQuery(InheritanceMapping inheritanceMapping) {
         this.inheritanceMapping = inheritanceMapping;
         this.query = new StringBuilder();
+        this.subQuery = new StringBuilder();
         this.fields = new LinkedList<>();
         this.tableSchemaSet = new HashSet<>();
         this.tableSchemaStringBuilderMap = new HashMap<>();
-        this.databaseSchema = new DatabaseSchema();
+
 
     }
 
@@ -62,9 +64,9 @@ public class InsertQuery extends QueryBuilder {
         fields.forEach(field -> {
             if (field.isAnnotationPresent(OneToOne.class) ){
 
-                System.out.println(field.getAnnotation(OneToOne.class).object());
 
-//                createSubQuery(field);
+
+                createSubQuery(field);
             }
             if (field.isAnnotationPresent(OneToMany.class) ){
 
@@ -76,48 +78,34 @@ public class InsertQuery extends QueryBuilder {
 
     private void createSubQuery(Field field) {
 
-
-
-
-        InheritanceMapping mapping = databaseSchema.getMapping(field.getType());
-
-        QueryBuilder queryBuilder = new InsertQuery(mapping);
-
-        QueryDirector<Object> queryDirector = new QueryDirector<>(queryBuilder);
-
-
-        String queryTmp;
-
+        Class<?> clazz = object.getClass();
+        Field ff = null; //Note, this can throw an exception if the field doesn't exist.
         try {
-            field.setAccessible(true);
-            System.out.println("typ z getType "+field.getType());
-            System.out.println("Typ z annotatedType "+field.getAnnotatedType());
-            System.out.println("generic type "+field.getGenericType());
-            System.out.println("pole "+field);
-            System.out.println("nazwa pola "+field.getName());
+            ff = clazz.getField(field.getName());
+            Object fieldValue = ff.get(object);
+            System.out.println("fff " + ff);
+            System.out.println("fieldValue " + fieldValue);
+
+            System.out.println("typ " + field.getType());
+
+            Dao<Object> dao = OrmManager.getDao((Class<Object>) field.getType());
+            InheritanceMapping mapping = dao.getMapping();
+            QueryBuilder queryBuilder = new InsertQuery(mapping);
+            QueryDirector<Object> queryDirector = new QueryDirector<>(queryBuilder);
+            String queryTmp = queryDirector.withObject(fieldValue).build();
+
+            subQuery.append(queryTmp).append(" ");
+            System.out.println("subQuery " + subQuery);
 
 
-//            Class<?> parentClass = object.getClass();
-//            Field fieldTmp = parentClass.getField(field.getName());
-//            fieldTmp.setAccessible(true);
-//            String fieldValue = (String)fieldTmp.get(parentClass);
-//            System.out.println("field Value "+fieldValue);
 
 
-
-
-
-//            Object obj1 =field.getClass().getDeclaringClass();
-
-            Object obj1 = field.get(field.getClass());
-
-            queryTmp = queryDirector.withObject(obj1).build();
-            System.out.println(queryTmp);
-        } catch (InvocationTargetException e) {
-            throw new InsertException("Error during insertion "+object.toString(),e);
-        } catch (IllegalAccessException e) {
-            throw new InsertException("Error during insertion "+object.toString(),e);
+        } catch (NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
         }
+
+
+
 
     }
 
@@ -173,9 +161,7 @@ public class InsertQuery extends QueryBuilder {
 //                stringBuilder.append(columnSchema.getColumnName()).append(",");
 //            });
             for (ColumnSchema columnSchema : tableSchema.getColumns()) {
-                System.out.println("column name "+columnSchema.getColumnName());
-                System.out.println("id w insert  "+tableSchema.getId().getColumnName());
-                System.out.println("id generowane?  "+columnSchema.isGeneratedId()+"\n");
+
                 if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
                     continue;
                 }
@@ -222,13 +208,16 @@ public class InsertQuery extends QueryBuilder {
                 Class cls = columnSchema.getJavaType();
                 Object obj;
 
+//
                 try {
                     obj = columnSchema.get(object);
+
 
                     if (obj == null) {
                         stringBuilder.append(parseNullableField(object, columnSchema));
                     } else if (obj.getClass() == String.class) {
                         stringBuilder.append("'").append(cls.cast(obj).toString()).append("', ");
+
                     } else {
                         stringBuilder.append(obj.toString()).append(", ");
                     }
@@ -269,6 +258,8 @@ public class InsertQuery extends QueryBuilder {
 
         tableSchemaSet.forEach(tableSchema -> query.append(tableSchemaStringBuilderMap.get(tableSchema).toString()
         ).append(" "));
+
+        query.append(subQuery.toString());
 
         return  this;
     }

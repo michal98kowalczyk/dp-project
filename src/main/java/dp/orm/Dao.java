@@ -17,9 +17,11 @@ public class Dao<T> {
     private DeleteExecutor deleteExecutor;
     private SelectExecutor selectExecutor;
     private UpdateExecutor updateExecutor;
+    private InheritanceMapping inheritanceMapping;
 
     public Dao(DataSource dataSource, Class<T> cls, InheritanceMapping inheritanceMapping) {
         this.cls = cls;
+        this.inheritanceMapping = inheritanceMapping;
         this.insertExecutor = InsertExecutor.builder()
                 .dataSource(dataSource)
                 .inheritanceMapping(inheritanceMapping)
@@ -57,5 +59,9 @@ public class Dao<T> {
 
     public T findById(int id) {
         return selectExecutor.findById(id, cls);
+    }
+
+    public InheritanceMapping getMapping(){
+        return this.inheritanceMapping;
     }
 }

@@ -83,11 +83,11 @@ public class OrmApp {
         Dao<Customer> customerDao = OrmManager.getDao(Customer.class);
         customerDao.insert(customer);
 
-        Dao<Address> addressDao = OrmManager.getDao(Address.class);
-        addressDao.insert(address1);
-
-        Dao<Contact> contactDao = OrmManager.getDao(Contact.class);
-        contacts.forEach(contact -> contactDao.insert(contact));
+//        Dao<Address> addressDao = OrmManager.getDao(Address.class);
+//        addressDao.insert(address1);
+//
+//        Dao<Contact> contactDao = OrmManager.getDao(Contact.class);
+//        contacts.forEach(contact -> contactDao.insert(contact));
 
 
 

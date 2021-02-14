@@ -13,6 +13,8 @@ public abstract class QueryBuilder {
 
 
     protected StringBuilder query;
+    protected StringBuilder subQuery;
+
 
     abstract <T> QueryBuilder withObject(T object);
 
