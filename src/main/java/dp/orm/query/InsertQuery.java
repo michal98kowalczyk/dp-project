@@ -1,6 +1,8 @@
 package dp.orm.query;
 
+import dp.orm.Dao;
 import dp.orm.DatabaseCreator;
+import dp.orm.OrmManager;
 import dp.orm.annotations.OneToMany;
 import dp.orm.annotations.OneToOne;
 import dp.orm.exceptions.InsertException;
@@ -46,6 +48,8 @@ public class InsertQuery extends QueryBuilder {
         this.object = object;
         fields = FieldUtils.getAllFields(object.getClass());
         System.out.println("obiekt "+object);
+        System.out.println("klasa "+object.getClass());
+//        System.out.println("obiekt wewntarz ");
 //        fields.forEach(System.out::println);
         checkAnnotations(fields);
 
@@ -58,9 +62,9 @@ public class InsertQuery extends QueryBuilder {
         fields.forEach(field -> {
             if (field.isAnnotationPresent(OneToOne.class) ){
 
-                System.out.println(field.getType());
-                System.out.println(field);
-                createSubQuery(field);
+                System.out.println(field.getAnnotation(OneToOne.class).object());
+
+//                createSubQuery(field);
             }
             if (field.isAnnotationPresent(OneToMany.class) ){
 
@@ -75,7 +79,6 @@ public class InsertQuery extends QueryBuilder {
 
 
 
-
         InheritanceMapping mapping = databaseSchema.getMapping(field.getType());
 
         QueryBuilder queryBuilder = new InsertQuery(mapping);
@@ -86,18 +89,34 @@ public class InsertQuery extends QueryBuilder {
         String queryTmp;
 
         try {
-            System.out.println("Typ "+field.getAnnotatedType());
-            System.out.println(field);
+            field.setAccessible(true);
+            System.out.println("typ z getType "+field.getType());
+            System.out.println("Typ z annotatedType "+field.getAnnotatedType());
+            System.out.println("generic type "+field.getGenericType());
+            System.out.println("pole "+field);
+            System.out.println("nazwa pola "+field.getName());
+
+
+//            Class<?> parentClass = object.getClass();
+//            Field fieldTmp = parentClass.getField(field.getName());
+//            fieldTmp.setAccessible(true);
+//            String fieldValue = (String)fieldTmp.get(parentClass);
+//            System.out.println("field Value "+fieldValue);
+
+
+
+
+
 //            Object obj1 =field.getClass().getDeclaringClass();
-            Object obj1 = object.getClass().getField(field.getName());
+
+            Object obj1 = field.get(field.getClass());
+
             queryTmp = queryDirector.withObject(obj1).build();
             System.out.println(queryTmp);
         } catch (InvocationTargetException e) {
             throw new InsertException("Error during insertion "+object.toString(),e);
         } catch (IllegalAccessException e) {
             throw new InsertException("Error during insertion "+object.toString(),e);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
         }
 
     }
@@ -160,6 +179,11 @@ public class InsertQuery extends QueryBuilder {
                 if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
                     continue;
                 }
+
+
+
+
+
                 stringBuilder.append(columnSchema.getColumnName()).append(",");
 
             }
@@ -183,6 +207,15 @@ public class InsertQuery extends QueryBuilder {
             for (ColumnSchema columnSchema : tableSchema.getColumns()) {
 
                 if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
+                    continue;
+                }
+
+                if (columnSchema.isForeignKey()){
+
+                    String referencedField = columnSchema.getForeignKey().getReferencedField();
+                    String referencedClass = columnSchema.getForeignKey().getReferencedClass();
+
+                    stringBuilder.append(" (select max(").append(referencedField).append(") from ").append(referencedClass).append("), ");
                     continue;
                 }
 

@@ -23,7 +23,7 @@ public class Customer {
     public List<Contact> contacts;
 
     @DatabaseField
-    @OneToOne
+    @OneToOne(object = "address")
     public Address address;
 
 
