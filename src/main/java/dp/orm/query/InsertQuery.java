@@ -64,50 +64,116 @@ public class InsertQuery extends QueryBuilder {
         fields.forEach(field -> {
             if (field.isAnnotationPresent(OneToOne.class) ){
 
+                Class<?> clazz = object.getClass();
+                Field ff = null; //Note, this can throw an exception if the field doesn't exist.
+                try {
+                    ff = clazz.getField(field.getName());
+                    Object fieldValue = ff.get(object);
+                    System.out.println("fff " + ff);
+                    System.out.println("fieldValue " + fieldValue);
+                    System.out.println("klasa tablicy "+fieldValue.getClass());
+
+                    createSubQueryFromObject(fieldValue);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
 
 
-                createSubQuery(field);
+
             }
             if (field.isAnnotationPresent(OneToMany.class) ){
 
-            }
+                Class<?> clazz = object.getClass();
+                Field ff = null; //Note, this can throw an exception if the field doesn't exist.
 
-        });
+                try {
+                    ff = clazz.getField(field.getName());
+                    Object fieldValue = ff.get(object);
+                    System.out.println("fff " + ff);
+                    System.out.println("fieldValue " + fieldValue);
+                    System.out.println("klasa tablicy "+fieldValue.getClass());
 
+//                    List<Field> items = new ArrayList<Field>((Collection<? extends Field>) fieldValue);
+//                    items.forEach(System.out::println);
+
+                    List items = (ArrayList)fieldValue;
+                    items.forEach(item ->{
+//                        System.out.println(item);
+//                        System.out.println(item.getClass());
+                        createSubQueryFromObject(item);
+                    });
+//                    List<Field> list = new ArrayList<Field>(Arrays.asList(fieldValue));
+
+
+
+
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+//
+//                    System.out.println("typ " + field.getType());
+//
+//                    createSubQuery(field);
+
+
+        }
+
+    });
     }
 
-    private void createSubQuery(Field field) {
+    private void createSubQueryFromObject(Object item) {
 
-        Class<?> clazz = object.getClass();
-        Field ff = null; //Note, this can throw an exception if the field doesn't exist.
+
         try {
-            ff = clazz.getField(field.getName());
-            Object fieldValue = ff.get(object);
-            System.out.println("fff " + ff);
-            System.out.println("fieldValue " + fieldValue);
-
-            System.out.println("typ " + field.getType());
-
-            Dao<Object> dao = OrmManager.getDao((Class<Object>) field.getType());
+            Dao<Object> dao = OrmManager.getDao((Class<Object>) item.getClass());
             InheritanceMapping mapping = dao.getMapping();
             QueryBuilder queryBuilder = new InsertQuery(mapping);
             QueryDirector<Object> queryDirector = new QueryDirector<>(queryBuilder);
-            String queryTmp = queryDirector.withObject(fieldValue).build();
-
+            String queryTmp = queryDirector.withObject(item).build();
             subQuery.append(queryTmp).append(" ");
             System.out.println("subQuery " + subQuery);
-
-
-
-
-        } catch (NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
 
-
-
     }
+
+//    private void createSubQuery(Field field) {
+//
+//        Class<?> clazz = object.getClass();
+//        Field ff = null; //Note, this can throw an exception if the field doesn't exist.
+//        try {
+//            ff = clazz.getField(field.getName());
+//            Object fieldValue = ff.get(object);
+////            System.out.println("fff " + ff);
+////            System.out.println("fieldValue " + fieldValue);
+////
+////            System.out.println("typ " + field.getType());
+//
+//            Dao<Object> dao = OrmManager.getDao((Class<Object>) field.getType());
+//            InheritanceMapping mapping = dao.getMapping();
+//            QueryBuilder queryBuilder = new InsertQuery(mapping);
+//            QueryDirector<Object> queryDirector = new QueryDirector<>(queryBuilder);
+//            String queryTmp = queryDirector.withObject(fieldValue).build();
+//
+//            subQuery.append(queryTmp).append(" ");
+//            System.out.println("subQuery " + subQuery);
+//
+//
+//
+//
+//        } catch (NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//
+//
+//    }
 
 
     @Override

@@ -53,9 +53,9 @@ public class OrmApp {
 //
 //        daoCat.insert(cat);
 //        daoCat.insert(cat2);
-//        daoCat.delete(0);
+//        daoCat.delete(1);
 //        cat2.setName("kotttt2");
-//        daoCat.update(cat2,8);
+//        daoCat.update(cat2,2);
 
 
 
