@@ -1,6 +1,6 @@
 package dp.orm.schemas;
 
-import dp.orm.ForeignKey.ForeignKey;
+import dp.orm.ForeignKey.ForeignKeyEntity;
 import dp.orm.annotations.DatabaseField;
 import dp.orm.annotations.Id;
 import dp.orm.exceptions.IncorrectIdException;
@@ -33,7 +33,7 @@ public class ColumnSchema {
 
     private boolean isForeignKey = false;
 
-    private ForeignKey foreignKey = null;
+    private ForeignKeyEntity foreignKey = null;
 
     public ColumnSchema(Field field){
 
@@ -120,7 +120,7 @@ public class ColumnSchema {
         }
     }
 
-    public void setForeignKey(ForeignKey foreignKey) {
+    public void setForeignKey(ForeignKeyEntity foreignKey) {
         this.foreignKey = foreignKey;
         this.isForeignKey = true;
     }
@@ -129,7 +129,7 @@ public class ColumnSchema {
         return isForeignKey;
     }
 
-    public ForeignKey getForeignKey() {
+    public ForeignKeyEntity getForeignKey() {
         return this.foreignKey;
     }
 }

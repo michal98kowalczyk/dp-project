@@ -3,7 +3,7 @@ package dp.orm.objects.Company;
 import dp.orm.annotations.DatabaseField;
 import dp.orm.annotations.DatabaseTable;
 import dp.orm.annotations.Id;
-import dp.orm.annotations.JoinColumn;
+import dp.orm.annotations.ForeignKey;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,7 +24,7 @@ public class Address {
 
 
     @DatabaseField
-    @JoinColumn(name = "customer_id", referencedClass = "Customer", referencedField = "id")
+    @ForeignKey(name = "customer_id", referencedClass = "Customer", referencedField = "id")
     public int customer_id;
 
 }

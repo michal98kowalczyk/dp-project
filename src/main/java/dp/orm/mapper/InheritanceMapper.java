@@ -1,19 +1,16 @@
 package dp.orm.mapper;
 
-import dp.orm.ForeignKey.ForeignKey;
+import dp.orm.ForeignKey.ForeignKeyEntity;
 import dp.orm.annotations.*;
 import dp.orm.exceptions.MultipleIdException;
 import dp.orm.exceptions.NoIdFieldException;
 import dp.orm.mapping.InheritanceMapping;
 import dp.orm.schemas.ColumnSchema;
-import org.checkerframework.checker.units.qual.C;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class InheritanceMapper {
 
@@ -51,10 +48,10 @@ public abstract class InheritanceMapper {
     }
 
     private ColumnSchema makeColumnSchema(Field field) {
-        if (field.isAnnotationPresent(JoinColumn.class)) {
+        if (field.isAnnotationPresent(ForeignKey.class)) {
             ColumnSchema columnSchema = new ColumnSchema(field);
-            ForeignKey foreignKey = new ForeignKey(field.getAnnotation(JoinColumn.class).name(),
-                    field.getAnnotation(JoinColumn.class).referencedClass(), field.getAnnotation(JoinColumn.class).referencedField());
+            ForeignKeyEntity foreignKey = new ForeignKeyEntity(field.getAnnotation(ForeignKey.class).name(),
+                    field.getAnnotation(ForeignKey.class).referencedClass(), field.getAnnotation(ForeignKey.class).referencedField());
             columnSchema.setForeignKey(foreignKey);
             return columnSchema;
         }

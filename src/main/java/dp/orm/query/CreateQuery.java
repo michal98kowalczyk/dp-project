@@ -1,6 +1,6 @@
 package dp.orm.query;
 
-import dp.orm.ForeignKey.ForeignKey;
+import dp.orm.ForeignKey.ForeignKeyEntity;
 import dp.orm.exceptions.ObjectClassException;
 import dp.orm.schemas.ColumnSchema;
 import dp.orm.schemas.TableSchema;
@@ -75,7 +75,7 @@ public class CreateQuery extends QueryBuilder {
                 .anyMatch(ColumnSchema::isForeignKey);
     }
 
-    private ForeignKey getForeignKeyFromTableSchema(Set<ColumnSchema> columnSchemaSet) {
+    private ForeignKeyEntity getForeignKeyFromTableSchema(Set<ColumnSchema> columnSchemaSet) {
         return columnSchemaSet.stream()
                 .filter(ColumnSchema::isForeignKey)
                 .map(ColumnSchema::getForeignKey)
@@ -83,7 +83,7 @@ public class CreateQuery extends QueryBuilder {
                 .orElseThrow(IllegalStateException::new);
     }
 
-    private StringBuilder addForeignKeyToQuery(StringBuilder query, ForeignKey foreignKey) {
+    private StringBuilder addForeignKeyToQuery(StringBuilder query, ForeignKeyEntity foreignKey) {
         return query.append(",\n")
                 .append("FOREIGN KEY (")
                 .append(foreignKey.getName())
