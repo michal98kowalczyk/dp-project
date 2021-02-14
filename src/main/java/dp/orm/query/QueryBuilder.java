@@ -1,8 +1,16 @@
 package dp.orm.query;
 
+import dp.orm.schemas.DatabaseSchema;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.lang.reflect.InvocationTargetException;
 
+
+
 public abstract class QueryBuilder {
+
+
 
     protected StringBuilder query;
 

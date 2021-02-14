@@ -11,7 +11,7 @@ import java.util.*;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class DatabaseSchema {
+public  class DatabaseSchema {
 
     private Map<Class<?>, InheritanceMapping>  classToTable = new HashMap<>();
 

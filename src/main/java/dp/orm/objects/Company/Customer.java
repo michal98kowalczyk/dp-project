@@ -22,5 +22,9 @@ public class Customer {
     @OneToMany
     public List<Contact> contacts;
 
+    @DatabaseField
+    @OneToOne
+    public Address address;
+
 
 }
