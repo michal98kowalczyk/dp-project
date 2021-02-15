@@ -32,8 +32,13 @@ public class QueryDirector<T> {
 
     public String build() throws InvocationTargetException, IllegalAccessException {
 
-        return queryBuilder.withObject(object).createOperation().setTable()
-                .setFields().setValues().withCondition(condition,isConditionSet)
+        return queryBuilder
+                .withObject(object)
+                .createOperation()
+                .setTable()
+                .setFields()
+                .setValues()
+                .withCondition(condition,isConditionSet)
                 .compose().generate();
     }
 

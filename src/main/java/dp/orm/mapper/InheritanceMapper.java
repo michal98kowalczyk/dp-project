@@ -47,14 +47,19 @@ public abstract class InheritanceMapper {
         return true;
     }
 
+
     private ColumnSchema makeColumnSchema(Field field) {
         if (field.isAnnotationPresent(ForeignKey.class)) {
-            ColumnSchema columnSchema = new ColumnSchema(field);
-            ForeignKeyEntity foreignKey = new ForeignKeyEntity(field.getAnnotation(ForeignKey.class).name(),
-                    field.getAnnotation(ForeignKey.class).referencedClass(), field.getAnnotation(ForeignKey.class).referencedField());
-            columnSchema.setForeignKey(foreignKey);
-            return columnSchema;
+            makeColumnSchemaForForeignKeyAnnotation(field);
         }
         return new ColumnSchema(field);
+    }
+
+    private ColumnSchema makeColumnSchemaForForeignKeyAnnotation(Field field) {
+        ColumnSchema columnSchema = new ColumnSchema(field);
+        ForeignKeyEntity foreignKey = new ForeignKeyEntity(field.getAnnotation(ForeignKey.class).name(),
+                field.getAnnotation(ForeignKey.class).referencedClass(), field.getAnnotation(ForeignKey.class).referencedField());
+        columnSchema.setForeignKey(foreignKey);
+        return columnSchema;
     }
 }

@@ -42,6 +42,7 @@ public class SelectQuery extends QueryBuilder {
         fields = FieldUtils.getAllFields((Class<?>) object);
         for (Field field : fields) {
             setTableSchema.add(inheritanceMapping.getTableSchema(field.getName()));
+
         }
 
         for (TableSchema schema : setTableSchema) {
