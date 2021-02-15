@@ -1,6 +1,7 @@
 package dp.orm.schemas;
 
 import dp.orm.ForeignKey.ForeignKeyEntity;
+import dp.orm.JoinColumn.JoinColumnEntity;
 import dp.orm.annotations.DatabaseField;
 import dp.orm.annotations.Id;
 import dp.orm.exceptions.IncorrectIdException;
@@ -34,6 +35,10 @@ public class ColumnSchema {
     private boolean isForeignKey = false;
 
     private ForeignKeyEntity foreignKey = null;
+
+    private boolean isJoinColumnAnnotationPresent = false;
+
+    private JoinColumnEntity joinColumnEntity = null;
 
     public ColumnSchema(Field field){
 
@@ -131,5 +136,18 @@ public class ColumnSchema {
 
     public ForeignKeyEntity getForeignKey() {
         return this.foreignKey;
+    }
+
+    public void setJoinColumn(JoinColumnEntity joinColumnEntity) {
+        this.joinColumnEntity = joinColumnEntity;
+        this.isJoinColumnAnnotationPresent = true;
+    }
+
+    public boolean isJoinColumnAnnotationPresent() {
+        return this.isJoinColumnAnnotationPresent;
+    }
+
+    public JoinColumnEntity getJoinColumnEntity() {
+        return this.joinColumnEntity;
     }
 }

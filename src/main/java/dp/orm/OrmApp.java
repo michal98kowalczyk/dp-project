@@ -29,14 +29,15 @@ public class OrmApp {
         //     class table ----------------------
 //
 //        Dog dog = new Dog();
-//
+////
 //        dog.setName("first");
 //        dog.setType("dog");
 //        dog.setOwner("michal");
-//
+////
 //        Dao<Dog> daoDog = OrmManager.getDao(Dog.class);
-//
+////
 //        daoDog.insert(dog);
+//        System.out.println(daoDog.findById(1));
 //
 //        Cat cat = new Cat();
 //
@@ -146,9 +147,10 @@ public class OrmApp {
 
         Dao<Customer> customerDao = OrmManager.getDao(Customer.class);
         customerDao.insert(customer);
+        customerDao.findById(1);
 
-        customerDao.delete(1);
-
+//        customerDao.delete(1);
+//
 //        Dao<Address> addressDao = OrmManager.getDao(Address.class);
 //        addressDao.delete(1);
 //

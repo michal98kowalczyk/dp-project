@@ -1,11 +1,13 @@
 package dp.orm.query;
 
+import dp.orm.JoinColumn.JoinColumnEntity;
 import dp.orm.annotations.Id;
 import dp.orm.mapping.InheritanceMapping;
 import dp.orm.schemas.ColumnSchema;
 import dp.orm.schemas.TableSchema;
 import dp.orm.utlis.FieldUtils;
 
+import javax.swing.*;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -21,6 +23,8 @@ public class SelectQuery extends QueryBuilder {
     TableSchema tableSchema;
     Set<TableSchema> setTableSchema;
     List<Field> fields;
+    boolean isJoinColumnAnnotationPresent = false;
+    ColumnSchema columnSchemaToJoin = null;
 
     public SelectQuery(InheritanceMapping inheritanceMapping) {
         this.inheritanceMapping = inheritanceMapping;
@@ -50,6 +54,10 @@ public class SelectQuery extends QueryBuilder {
                         .append(".")
                         .append(colSchema.getColumnName())
                         .append(", ");
+                if(colSchema.isJoinColumnAnnotationPresent()) {
+                    isJoinColumnAnnotationPresent = true;
+                    columnSchemaToJoin = colSchema;
+                }
             }
         }
 
@@ -88,6 +96,17 @@ public class SelectQuery extends QueryBuilder {
                     .append(tableSchema.getName() + "." + tableSchema.getId().getColumnName())
                     .append(" = ")
                     .append(schema.getName() + "." + schema.getId().getColumnName())
+                    .append(" ");
+        }
+
+        if(isJoinColumnAnnotationPresent) {
+            JoinColumnEntity  joinColumnEntity = columnSchemaToJoin.getJoinColumnEntity();
+            query.append("JOIN ")
+                    .append(columnSchemaToJoin.getClass())
+                    .append(" ON ")
+                    .append(tableSchema.getCls().toString() + "." + tableSchema.getId().getColumnName())
+                    .append(" = ")
+                    .append(joinColumnEntity.getReferencedClass() + "." + joinColumnEntity.getReferencedColumnName())
                     .append(" ");
         }
 

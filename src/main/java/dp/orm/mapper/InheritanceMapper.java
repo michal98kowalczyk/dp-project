@@ -1,6 +1,7 @@
 package dp.orm.mapper;
 
 import dp.orm.ForeignKey.ForeignKeyEntity;
+import dp.orm.JoinColumn.JoinColumnEntity;
 import dp.orm.annotations.*;
 import dp.orm.exceptions.MultipleIdException;
 import dp.orm.exceptions.NoIdFieldException;
@@ -49,12 +50,28 @@ public abstract class InheritanceMapper {
 
     private ColumnSchema makeColumnSchema(Field field) {
         if (field.isAnnotationPresent(ForeignKey.class)) {
-            ColumnSchema columnSchema = new ColumnSchema(field);
-            ForeignKeyEntity foreignKey = new ForeignKeyEntity(field.getAnnotation(ForeignKey.class).name(),
-                    field.getAnnotation(ForeignKey.class).referencedClass(), field.getAnnotation(ForeignKey.class).referencedField());
-            columnSchema.setForeignKey(foreignKey);
-            return columnSchema;
+            return makeColumnSchemaForForeignKeyAnnotation(field);
+        }
+        if(field.isAnnotationPresent(JoinColumn.class)) {
+            return makeColumnSchemaForJoinColumnAnnotation(field);
         }
         return new ColumnSchema(field);
+    }
+
+    private ColumnSchema makeColumnSchemaForForeignKeyAnnotation (Field field) {
+        ColumnSchema columnSchema = new ColumnSchema(field);
+        ForeignKeyEntity foreignKey = new ForeignKeyEntity(field.getAnnotation(ForeignKey.class).name(),
+                field.getAnnotation(ForeignKey.class).referencedClass(), field.getAnnotation(ForeignKey.class).referencedField());
+        columnSchema.setForeignKey(foreignKey);
+        return columnSchema;
+    }
+
+    private ColumnSchema makeColumnSchemaForJoinColumnAnnotation(Field field) {
+        ColumnSchema columnSchema = new ColumnSchema(field);
+        JoinColumnEntity joinColumnEntity = new JoinColumnEntity(field.getAnnotation(JoinColumn.class).name(),
+                field.getAnnotation(JoinColumn.class).referencedColumnName(),
+                field.getAnnotation(JoinColumn.class).referencedClass().toString());
+        columnSchema.setJoinColumn(joinColumnEntity);
+        return columnSchema;
     }
 }
