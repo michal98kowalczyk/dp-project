@@ -7,11 +7,14 @@ import dp.orm.exceptions.MultipleIdException;
 import dp.orm.exceptions.NoIdFieldException;
 import dp.orm.mapping.InheritanceMapping;
 import dp.orm.schemas.ColumnSchema;
+import dp.orm.schemas.TableSchema;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 
 public abstract class InheritanceMapper {
 
@@ -52,9 +55,6 @@ public abstract class InheritanceMapper {
         if (field.isAnnotationPresent(ForeignKey.class)) {
             return makeColumnSchemaForForeignKeyAnnotation(field);
         }
-        if(field.isAnnotationPresent(JoinColumn.class)) {
-            return makeColumnSchemaForJoinColumnAnnotation(field);
-        }
         return new ColumnSchema(field);
     }
 
@@ -63,15 +63,8 @@ public abstract class InheritanceMapper {
         ForeignKeyEntity foreignKey = new ForeignKeyEntity(field.getAnnotation(ForeignKey.class).name(),
                 field.getAnnotation(ForeignKey.class).referencedClass(), field.getAnnotation(ForeignKey.class).referencedField());
         columnSchema.setForeignKey(foreignKey);
-        return columnSchema;
-    }
+        System.out.println("ustawiamTOGowno1");
 
-    private ColumnSchema makeColumnSchemaForJoinColumnAnnotation(Field field) {
-        ColumnSchema columnSchema = new ColumnSchema(field);
-        JoinColumnEntity joinColumnEntity = new JoinColumnEntity(field.getAnnotation(JoinColumn.class).name(),
-                field.getAnnotation(JoinColumn.class).referencedColumnName(),
-                field.getAnnotation(JoinColumn.class).referencedClass().toString());
-        columnSchema.setJoinColumn(joinColumnEntity);
         return columnSchema;
     }
 }

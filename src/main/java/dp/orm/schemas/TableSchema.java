@@ -1,6 +1,7 @@
 package dp.orm.schemas;
 
 
+import dp.orm.JoinColumn.JoinColumnEntity;
 import lombok.*;
 
 import java.util.Collection;
@@ -25,6 +26,10 @@ public class TableSchema {
 
     private Set<ColumnSchema> columns;
 
+    private boolean isJoinColumnAnnotationPresent = false;
+
+    private JoinColumnEntity joinColumnEntity = null;
+
     public void addColumn(ColumnSchema column){
         columns.add(column);
     }
@@ -33,6 +38,19 @@ public class TableSchema {
 //        columns.addAll(columns);
         columnsToAdd.forEach(columnSchema -> this.addColumn(columnSchema));
 
+    }
+
+    public void setJoinColumn(JoinColumnEntity joinColumnEntity) {
+        this.joinColumnEntity = joinColumnEntity;
+        this.isJoinColumnAnnotationPresent = true;
+    }
+
+    public boolean isJoinColumnAnnotationPresent() {
+        return this.isJoinColumnAnnotationPresent;
+    }
+
+    public JoinColumnEntity getJoinColumnEntity() {
+        return this.joinColumnEntity;
     }
 
 

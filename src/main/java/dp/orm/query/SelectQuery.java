@@ -2,6 +2,9 @@ package dp.orm.query;
 
 import dp.orm.JoinColumn.JoinColumnEntity;
 import dp.orm.annotations.Id;
+import dp.orm.annotations.JoinColumn;
+import dp.orm.annotations.OneToMany;
+import dp.orm.annotations.OneToOne;
 import dp.orm.mapping.InheritanceMapping;
 import dp.orm.schemas.ColumnSchema;
 import dp.orm.schemas.TableSchema;
@@ -9,10 +12,7 @@ import dp.orm.utlis.FieldUtils;
 
 import javax.swing.*;
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SelectQuery extends QueryBuilder {
@@ -23,8 +23,8 @@ public class SelectQuery extends QueryBuilder {
     TableSchema tableSchema;
     Set<TableSchema> setTableSchema;
     List<Field> fields;
-    boolean isJoinColumnAnnotationPresent = false;
-    ColumnSchema columnSchemaToJoin = null;
+    Optional<JoinColumnEntity> joinColumnEntityForOneToOne = Optional.empty();
+    Optional<JoinColumnEntity> joinColumnEntityForOneToMany = Optional.empty();
 
     public SelectQuery(InheritanceMapping inheritanceMapping) {
         this.inheritanceMapping = inheritanceMapping;
@@ -42,14 +42,20 @@ public class SelectQuery extends QueryBuilder {
     @Override
     QueryBuilder createOperation() {
         query.append("SELECT ");
-
         fields = FieldUtils.getAllFields((Class<?>) object);
         for (Field field : fields) {
             setTableSchema.add(inheritanceMapping.getTableSchema(field.getName()));
+            if(field.isAnnotationPresent(OneToOne.class)) {
+                this.joinColumnEntityForOneToOne = Optional.of(makeColumnSchemaForJoinColumnAnnotation(field));
+            }
+            if(field.isAnnotationPresent(OneToMany.class)) {
+                this.joinColumnEntityForOneToMany = Optional.of(makeColumnSchemaForJoinColumnAnnotation(field));
+            }
         }
 
         for (TableSchema schema : setTableSchema) {
             for (ColumnSchema colSchema : schema.getColumns()) {
+                System.out.println(colSchema);
                 query.append(schema.getName())
                         .append(".")
                         .append(colSchema.getColumnName())
@@ -64,6 +70,12 @@ public class SelectQuery extends QueryBuilder {
         query.delete(query.length() - 2, query.length() - 1)
                 .append(" FROM ");
         return this;
+    }
+
+    private JoinColumnEntity makeColumnSchemaForJoinColumnAnnotation(Field field) {
+        return new JoinColumnEntity(field.getAnnotation(JoinColumn.class).name(),
+                field.getAnnotation(JoinColumn.class).referencedColumnName(),
+                field.getAnnotation(JoinColumn.class).referencedClass().toString());
     }
 
     @Override
@@ -89,16 +101,7 @@ public class SelectQuery extends QueryBuilder {
 
         setTableSchema.remove(tableSchema);
 
-        for (TableSchema schema : setTableSchema) {
-            query.append("JOIN ")
-                    .append(schema.getName())
-                    .append(" ON ")
-                    .append(tableSchema.getName() + "." + tableSchema.getId().getColumnName())
-                    .append(" = ")
-                    .append(schema.getName() + "." + schema.getId().getColumnName())
-                    .append(" ");
-        }
-
+        System.out.println(isJoinColumnAnnotationPresent);
         if(isJoinColumnAnnotationPresent) {
             JoinColumnEntity  joinColumnEntity = columnSchemaToJoin.getJoinColumnEntity();
             query.append("JOIN ")
@@ -107,6 +110,16 @@ public class SelectQuery extends QueryBuilder {
                     .append(tableSchema.getCls().toString() + "." + tableSchema.getId().getColumnName())
                     .append(" = ")
                     .append(joinColumnEntity.getReferencedClass() + "." + joinColumnEntity.getReferencedColumnName())
+                    .append(" ");
+        }
+
+        for (TableSchema schema : setTableSchema) {
+            query.append("JOIN ")
+                    .append(schema.getName())
+                    .append(" ON ")
+                    .append(tableSchema.getName() + "." + tableSchema.getId().getColumnName())
+                    .append(" = ")
+                    .append(schema.getName() + "." + schema.getId().getColumnName())
                     .append(" ");
         }
 

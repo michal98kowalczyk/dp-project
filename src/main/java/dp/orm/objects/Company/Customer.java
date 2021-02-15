@@ -19,13 +19,13 @@ public class Customer {
     public String name;
 
     @DatabaseField
-    @OneToMany
     @JoinColumn(name = "contact",referencedColumnName = "customer_id", referencedClass = Contact.class)
+    @OneToMany
     public List<Contact> contacts;
 
     @DatabaseField
-    @OneToOne
     @JoinColumn(name = "address",referencedColumnName = "customer_id",referencedClass = Address.class)
+    @OneToOne
     public Address address;
 
 
