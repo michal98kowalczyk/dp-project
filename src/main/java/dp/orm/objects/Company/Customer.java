@@ -20,12 +20,12 @@ public class Customer {
 
     @DatabaseField
     @OneToMany
-    @JoinColumn(name = "contact",referencedColumnName = "customer_id")
+    @JoinColumn(name = "contact",referencedColumnName = "customer_id", referencedClass = Contact.class)
     public List<Contact> contacts;
 
     @DatabaseField
     @OneToOne
-    @JoinColumn(name = "address",referencedColumnName = "customer_id")
+    @JoinColumn(name = "address",referencedColumnName = "customer_id",referencedClass = Address.class)
     public Address address;
 
 
