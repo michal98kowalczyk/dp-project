@@ -1,16 +1,28 @@
 package dp.orm.query;
 
+import dp.orm.Dao;
+import dp.orm.DatabaseCreator;
+import dp.orm.OrmManager;
+import dp.orm.annotations.OneToMany;
+import dp.orm.annotations.OneToOne;
+import dp.orm.exceptions.InsertException;
 import dp.orm.exceptions.NullableFieldException;
 import dp.orm.mapping.InheritanceMapping;
 import dp.orm.schemas.ColumnSchema;
+import dp.orm.schemas.DatabaseSchema;
 import dp.orm.schemas.TableSchema;
 import dp.orm.utlis.FieldUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+
 public class InsertQuery extends QueryBuilder {
+
+
+
 
     private InheritanceMapping inheritanceMapping;
     Map<TableSchema,StringBuilder> tableSchemaStringBuilderMap;
@@ -19,12 +31,17 @@ public class InsertQuery extends QueryBuilder {
     List<Field> fields;
 
 
+
+
     public InsertQuery(InheritanceMapping inheritanceMapping) {
         this.inheritanceMapping = inheritanceMapping;
         this.query = new StringBuilder();
+        this.subQuery = new StringBuilder();
         this.fields = new LinkedList<>();
         this.tableSchemaSet = new HashSet<>();
         this.tableSchemaStringBuilderMap = new HashMap<>();
+
+
     }
 
     @Override
@@ -32,9 +49,132 @@ public class InsertQuery extends QueryBuilder {
 
         this.object = object;
         fields = FieldUtils.getAllFields(object.getClass());
+        System.out.println("obiekt "+object);
+        System.out.println("klasa "+object.getClass());
+//        System.out.println("obiekt wewntarz ");
+//        fields.forEach(System.out::println);
+        checkAnnotations(fields);
+
         return this;
 
     }
+
+    private void checkAnnotations(List<Field> fields) {
+
+        fields.forEach(field -> {
+            if (field.isAnnotationPresent(OneToOne.class) ){
+
+                Class<?> clazz = object.getClass();
+                Field ff = null; //Note, this can throw an exception if the field doesn't exist.
+                try {
+                    ff = clazz.getField(field.getName());
+                    Object fieldValue = ff.get(object);
+                    System.out.println("fff " + ff);
+                    System.out.println("fieldValue " + fieldValue);
+                    System.out.println("klasa tablicy "+fieldValue.getClass());
+
+                    createSubQueryFromObject(fieldValue);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+            if (field.isAnnotationPresent(OneToMany.class) ){
+
+                Class<?> clazz = object.getClass();
+                Field ff = null; //Note, this can throw an exception if the field doesn't exist.
+
+                try {
+                    ff = clazz.getField(field.getName());
+                    Object fieldValue = ff.get(object);
+                    System.out.println("fff " + ff);
+                    System.out.println("fieldValue " + fieldValue);
+                    System.out.println("klasa tablicy "+fieldValue.getClass());
+
+//                    List<Field> items = new ArrayList<Field>((Collection<? extends Field>) fieldValue);
+//                    items.forEach(System.out::println);
+
+                    List items = (ArrayList)fieldValue;
+                    items.forEach(item ->{
+//                        System.out.println(item);
+//                        System.out.println(item.getClass());
+                        createSubQueryFromObject(item);
+                    });
+//                    List<Field> list = new ArrayList<Field>(Arrays.asList(fieldValue));
+
+
+
+
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+//
+//                    System.out.println("typ " + field.getType());
+//
+//                    createSubQuery(field);
+
+
+        }
+
+    });
+    }
+
+    private void createSubQueryFromObject(Object item) {
+
+
+        try {
+            Dao<Object> dao = OrmManager.getDao((Class<Object>) item.getClass());
+            InheritanceMapping mapping = dao.getMapping();
+            QueryBuilder queryBuilder = new InsertQuery(mapping);
+            QueryDirector<Object> queryDirector = new QueryDirector<>(queryBuilder);
+            String queryTmp = queryDirector.withObject(item).build();
+            subQuery.append(queryTmp).append(" ");
+            System.out.println("subQuery " + subQuery);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+//    private void createSubQuery(Field field) {
+//
+//        Class<?> clazz = object.getClass();
+//        Field ff = null; //Note, this can throw an exception if the field doesn't exist.
+//        try {
+//            ff = clazz.getField(field.getName());
+//            Object fieldValue = ff.get(object);
+////            System.out.println("fff " + ff);
+////            System.out.println("fieldValue " + fieldValue);
+////
+////            System.out.println("typ " + field.getType());
+//
+//            Dao<Object> dao = OrmManager.getDao((Class<Object>) field.getType());
+//            InheritanceMapping mapping = dao.getMapping();
+//            QueryBuilder queryBuilder = new InsertQuery(mapping);
+//            QueryDirector<Object> queryDirector = new QueryDirector<>(queryBuilder);
+//            String queryTmp = queryDirector.withObject(fieldValue).build();
+//
+//            subQuery.append(queryTmp).append(" ");
+//            System.out.println("subQuery " + subQuery);
+//
+//
+//
+//
+//        } catch (NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//
+//
+//    }
+
 
     @Override
     QueryBuilder createOperation() {
@@ -87,12 +227,15 @@ public class InsertQuery extends QueryBuilder {
 //                stringBuilder.append(columnSchema.getColumnName()).append(",");
 //            });
             for (ColumnSchema columnSchema : tableSchema.getColumns()) {
-                System.out.println("column name "+columnSchema.getColumnName());
-                System.out.println("id w insert  "+tableSchema.getId().getColumnName());
-                System.out.println("id generowane?  "+columnSchema.isGeneratedId()+"\n");
+
                 if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
                     continue;
                 }
+
+
+
+
+
                 stringBuilder.append(columnSchema.getColumnName()).append(",");
 
             }
@@ -119,16 +262,28 @@ public class InsertQuery extends QueryBuilder {
                     continue;
                 }
 
+                if (columnSchema.isForeignKey()){
+
+                    String referencedField = columnSchema.getForeignKey().getReferencedField();
+                    String referencedClass = columnSchema.getForeignKey().getReferencedClass();
+
+                    stringBuilder.append(" (select max(").append(referencedField).append(") from ").append(referencedClass).append("), ");
+                    continue;
+                }
+
                 Class cls = columnSchema.getJavaType();
                 Object obj;
 
+//
                 try {
                     obj = columnSchema.get(object);
+
 
                     if (obj == null) {
                         stringBuilder.append(parseNullableField(object, columnSchema));
                     } else if (obj.getClass() == String.class) {
                         stringBuilder.append("'").append(cls.cast(obj).toString()).append("', ");
+
                     } else {
                         stringBuilder.append(obj.toString()).append(", ");
                     }
@@ -169,6 +324,8 @@ public class InsertQuery extends QueryBuilder {
 
         tableSchemaSet.forEach(tableSchema -> query.append(tableSchemaStringBuilderMap.get(tableSchema).toString()
         ).append(" "));
+
+        query.append(subQuery.toString());
 
         return  this;
     }

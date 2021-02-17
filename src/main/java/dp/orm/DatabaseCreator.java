@@ -4,7 +4,9 @@ import dp.orm.annotations.DatabaseTable;
 import dp.orm.executors.CreateExecutor;
 import dp.orm.mapper.InheritanceMapper;
 import dp.orm.mapping.InheritanceMapping;
+import dp.orm.schemas.ColumnSchema;
 import dp.orm.schemas.DatabaseSchema;
+import dp.orm.schemas.TableSchema;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -17,6 +19,8 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @CommonsLog
 @Component
@@ -78,9 +82,26 @@ public class DatabaseCreator implements CommandLineRunner {
         });
 
 
+        databaseSchema.getTables().forEach(System.out::println);
+
+//        databaseSchema.getTables().forEach(tableSchema -> createExecutor.createTable(tableSchema));
+
+        List<TableSchema> tablesWithForeignKeys = new ArrayList<>();
+
+        for (TableSchema tableSchema : databaseSchema.getTables()) {
 
 
-        databaseSchema.getTables().forEach(tableSchema -> createExecutor.createTable(tableSchema));
+            for (ColumnSchema columnSchema : tableSchema.getColumns()) {
+                if (columnSchema.isForeignKey()) {
+                    tablesWithForeignKeys.add(tableSchema);
+
+                }
+            }
+            if (tablesWithForeignKeys.contains(tableSchema)) continue;
+            createExecutor.createTable(tableSchema);
+        }
+
+        tablesWithForeignKeys.forEach(tableSchema -> createExecutor.createTable(tableSchema));
     }
 
     private List<Class<?>> findClasses() {
@@ -105,4 +126,6 @@ public class DatabaseCreator implements CommandLineRunner {
 
         return classes;
     }
+
+
 }
