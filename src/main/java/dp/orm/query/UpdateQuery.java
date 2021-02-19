@@ -1,6 +1,9 @@
 package dp.orm.query;
 
-import dp.orm.annotations.Id;
+import dp.orm.Dao;
+import dp.orm.OrmManager;
+import dp.orm.annotations.*;
+import dp.orm.exceptions.NullableFieldException;
 import dp.orm.exceptions.UpdateException;
 import dp.orm.mapping.InheritanceMapping;
 import dp.orm.schemas.ColumnSchema;
@@ -9,86 +12,108 @@ import dp.orm.utlis.FieldUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class UpdateQuery extends QueryBuilder{
 
     private InheritanceMapping inheritanceMapping;
-    TableSchema tableSchema;
+    Map<TableSchema,StringBuilder> tableSchemaStringBuilderMap;
+    Set<TableSchema> tableSchemaSet;
     Object object;
-    Field field;
+    List<Field> fields;
 
     public UpdateQuery(InheritanceMapping inheritanceMapping){
         this.inheritanceMapping = inheritanceMapping;
-        this.query=new StringBuilder();
+        tableSchemaStringBuilderMap = new HashMap<>();
+        tableSchemaSet = new HashSet<>();
+        this.fields = new LinkedList<>();
+        this.query = new StringBuilder();
+        this.subQuery = new StringBuilder();
     }
 
     @Override
     <T> QueryBuilder withObject(T object) {
         this.object=object;
+        fields = FieldUtils.getAllFields(object.getClass());
         return this;
     }
 
     @Override
     QueryBuilder createOperation() {
-        query.append("UPDATE ");
+
+        fields.forEach(field -> {
+            TableSchema tableSchema = inheritanceMapping.getTableSchema(field.getName());
+            tableSchemaStringBuilderMap.put(tableSchema,new StringBuilder());
+            tableSchemaSet.add(tableSchema);
+        });
+
+        tableSchemaSet.forEach(tableSchema -> {
+            tableSchemaStringBuilderMap.get(tableSchema).append("UPDATE ");
+        });
 
         return this;
     }
 
+
     @Override
     QueryBuilder setTable() {
 
-        field = FieldUtils.getAllFields(object.getClass()).stream().filter(field -> field.isAnnotationPresent(Id.class)).findFirst()
-                .orElseThrow(() -> new UpdateException("Error during update" + object.getClass().getName()));
+        tableSchemaSet.forEach(tableSchema -> {
+            tableSchemaStringBuilderMap.get(tableSchema).append(tableSchema.getName());
+        });
 
-        tableSchema = inheritanceMapping.getTableSchema(field.getName());
-        query.append(tableSchema.getName());
 
         return this;
     }
 
     @Override
     QueryBuilder setFields() {
-        query.append(" SET  (");
+        tableSchemaSet.forEach(tableSchema -> {
+            tableSchemaStringBuilderMap.get(tableSchema).append(" SET  ");
+        });
         Object tmpObj;
 
 //        System.out.println(tableSchema.getColumns().size());
         //moze wiecie jak inaczej to obsluzyc
+        for (TableSchema tableSchema : tableSchemaSet) {
+            StringBuilder stringBuilder = tableSchemaStringBuilderMap.get(tableSchema);
 
 
+            for (ColumnSchema columnSchema : tableSchema.getColumns()) {
 
-        for (ColumnSchema columnSchema : tableSchema.getColumns()) {
+                if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId()) {
+                    continue;
+                }
 
-            if (tableSchema.getColumns().size() == 2){
-                query.deleteCharAt(query.length()-1);
+
+                stringBuilder.append(columnSchema.getColumnName()).append(" = ");
+                Class cls = columnSchema.getJavaType();
+                Object obj;
+
+                try {
+                    obj = columnSchema.get(object);
+
+
+                    if (obj == null) {
+                        stringBuilder.append(parseNullableField(object, columnSchema));
+                    } else if (obj.getClass() == String.class) {
+                        stringBuilder.append("'").append(cls.cast(obj).toString()).append("', ");
+
+                    } else {
+                        stringBuilder.append(obj.toString()).append(", ");
+                    }
+                } catch (Exception e) {
+                    stringBuilder.append("NULL, ");
+
+                }
+
             }
-
-            if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
-                continue;
-            }
-
-            try {
-                tmpObj = columnSchema.get(object);
-            } catch (Exception e) {
-                continue;
-
-            }
-
-            query.append(columnSchema.getColumnName()).append(" ,");
-        }
 
 //        query.delete(query.length() - 2, query.length() - 1);
-        query.deleteCharAt(query.length()-1);
-        if (tableSchema.getColumns().size() == 2){
-            query.append(" = ");
-        }else{
-            query.append(") = (");
+            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length() -  1);
+
+
         }
-
-
 
 
         return this;
@@ -97,63 +122,143 @@ public class UpdateQuery extends QueryBuilder{
     @Override
     QueryBuilder setValues() throws InvocationTargetException, IllegalAccessException {
 
-        Object tmpObj;
-
-        for (ColumnSchema columnSchema : tableSchema.getColumns()) {
-
-            if (columnSchema.getColumnName().equals(tableSchema.getId().getColumnName()) && columnSchema.isGeneratedId() ) {
-                continue;
-            }
-
-            try{
-            tmpObj = columnSchema.get(object);
-
-        }catch (Exception e){
-                continue;
-            }
-
-        if (tmpObj == null){
-            query.append("NULL,");
-            continue;
-        }
-
-        if (tmpObj.getClass() == String.class) {
-            query.append("\'").append(tmpObj).append("\'");
-
-        }else {
-            query.append(tmpObj);
-        }
-
-
-        query.append(",");
-
-
-
-        }
-
-
-        query.deleteCharAt(query.length()-1);
-
 
         return this;
+
+    }
+    private <T> String parseNullableField(T object, ColumnSchema columnSchema) {
+        if (columnSchema.isNullable()){
+            return "NULL, ";
+        }
+        throw new NullableFieldException("This object is a null! Error! " + object.toString());
     }
 
     @Override
     QueryBuilder withCondition(int id, boolean isConditionSet) {
-        String columnName = tableSchema.getId().getColumnName();
-//        Object obj = tableSchema.getId().get(object);
 
-        if (tableSchema.getColumns().size() != 2){
-            query.append(") ");
+        checkAnnotations(fields,id);
+
+        Optional<Field> foreignKey = getforeignKeyIfExists(fields);
+
+
+        if(foreignKey.isPresent()){
+            updateByForeignKey(foreignKey.get(),id);
+        }else {
+            tableSchemaSet.forEach(tableSchema -> {
+                String columnName = tableSchema.getId().getColumnName();
+                tableSchemaStringBuilderMap.get(tableSchema).append(" WHERE ").append(columnName).append(" = ").append(id).append(";");
+            });
         }
 
-        query.append(" WHERE ").append(columnName).append(" = ").append(id).append(";");
+
 
         return this;
+    }
+    private Optional<Field> getforeignKeyIfExists(List<Field> fields) {
+
+        return fields.stream().filter(field -> field.isAnnotationPresent(ForeignKey.class)).findAny();
+
+    }
+
+
+    private void checkAnnotations(List<Field> fields, int id) {
+
+        fields.forEach(field -> {
+            if (field.isAnnotationPresent(OneToOne.class) ){
+
+                Class<?> clazz = object.getClass();
+                Field ff = null; //Note, this can throw an exception if the field doesn't exist.
+                try {
+                    ff = clazz.getField(field.getName());
+                    Object fieldValue = ff.get(object);
+
+                    createSubQueryFromObject(fieldValue, id);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+            if (field.isAnnotationPresent(OneToMany.class) ){
+
+                Class<?> clazz = object.getClass();
+                Field ff = null; //Note, this can throw an exception if the field doesn't exist.
+
+                try {
+                    ff = clazz.getField(field.getName());
+                    Object fieldValue = ff.get(object);
+
+//                    List<Field> items = new ArrayList<Field>((Collection<? extends Field>) fieldValue);
+//                    items.forEach(System.out::println);
+
+                    List items = (ArrayList)fieldValue;
+                    items.forEach(item ->{
+//                        System.out.println(item);
+//                        System.out.println(item.getClass());
+                        createSubQueryFromObject(item, id);
+                    });
+//                    List<Field> list = new ArrayList<Field>(Arrays.asList(fieldValue));
+
+
+
+
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+//
+//                    System.out.println("typ " + field.getType());
+//
+//                    createSubQuery(field);
+
+
+            }
+
+        });
+    }
+    private void updateByForeignKey(Field field, int id) {
+
+        String name = field.getAnnotation(ForeignKey.class).name();
+
+
+        tableSchemaSet.forEach(tableSchema -> {
+            tableSchemaStringBuilderMap.get(tableSchema).append(" WHERE ").append(name).append(" = ").append(id).append(";");
+        });
+
+
+
+    }
+
+    private void createSubQueryFromObject(Object item, int id) {
+
+
+        try {
+            Dao<Object> dao = OrmManager.getDao((Class<Object>) item.getClass());
+            InheritanceMapping mapping = dao.getMapping();
+            QueryBuilder queryBuilder = new UpdateQuery(mapping);
+            QueryDirector<Object> queryDirector = new QueryDirector<>(queryBuilder);
+            String queryTmp = queryDirector.withObject(item).withCondition(id).build();
+            subQuery.append(queryTmp).append(" ");
+            System.out.println("subQuery " + subQuery);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     @Override
     QueryBuilder compose() {
+//        System.out.println(subQuery);
+        query.append(subQuery.toString());
+        tableSchemaSet.forEach(tableSchema -> {
+            query.append(tableSchemaStringBuilderMap.get(tableSchema).toString()).append(" ");
+        });
+
+
         return this;
     }
 }

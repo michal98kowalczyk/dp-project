@@ -147,7 +147,7 @@ public class OrmApp {
         Dao<Customer> customerDao = OrmManager.getDao(Customer.class);
         customerDao.insert(customer);
 
-        customerDao.delete(1);
+        customerDao.update(customer, 1);
 
 //        Dao<Address> addressDao = OrmManager.getDao(Address.class);
 //        addressDao.delete(1);
